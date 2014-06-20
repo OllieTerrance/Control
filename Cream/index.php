@@ -175,11 +175,11 @@ if ($access) {
                                     <span class="caret"></span>
                                     <span class="sr-only">Toggle dropdown</span>
                                 </button>
-                                <ul class="dropdown-menu pull-right" role="menu">
+                                <ul id="location-common" class="dropdown-menu pull-right" role="menu">
                                     <li class="dropdown-header">Common</li>
-                                    <li><a href="#">Home <code>/home/user</code></a></li>
-                                    <li><a href="#">WWW <code>/var/www</code></a></li>
-                                    <li><a href="#">Libraries <code>/var/res</code></a></li>
+                                    <li><a href data-path="/home/user">Home <code>/home/user</code></a></li>
+                                    <li><a href data-path="/var/www">WWW <code>/var/www</code></a></li>
+                                    <li><a href data-path="/var/res">Libraries <code>/var/res</code></a></li>
                                 </ul>
                             </div>
                         </div>

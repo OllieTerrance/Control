@@ -29,7 +29,7 @@ td {
 #files-list {
     margin-top: 15px;
 }
-#files-list h3.panel-title {
+#files-list .panel-heading {
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;

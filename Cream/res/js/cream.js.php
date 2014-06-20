@@ -9,19 +9,23 @@ $access = $local || $remote;
 <?
 if ($access) {
 ?>
+    // check service status on load
     $.ajax({
         url: "services.php",
         success: function(data, stat, xhr) {
             var table = $("<table/>").attr("id", "services").addClass("table table-bordered table-condensed");
+            // lines of " [ x ]  y" where x is +/-, y is name
             var raw = data.split("\n");
             for (var i in raw) {
                 if (!raw[i]) continue;
                 var tr = $("<tr/>");
                 var colour = "";
                 switch (raw[i].charAt(3)) {
+                    // running
                     case "+":
                         colour = "success";
                         break;
+                    // not running
                     case "-":
                         colour = "danger";
                         break;
@@ -33,9 +37,10 @@ if ($access) {
             $("#services").replaceWith(table);
         },
         error: function(xhr, stat, err) {
-            $("#services").removeClass("alert-warning").addClass("alert-danger").text("Unable to query server status.");
+            $("#services").removeClass("alert-warning").addClass("alert-danger").text("Unable to query status of services.");
         }
     });
+    // async logout button
     $("#logout").click(function(e) {
         e.preventDefault();
         $("#logout").text("Loading...").parent().addClass("active");
@@ -49,6 +54,7 @@ if ($access) {
             }
         });
     });
+    // file browser
     var history = [];
     var pos = -1;
     var back = false, forward = false;
@@ -70,24 +76,35 @@ if ($access) {
         forward = true;
         $("#location-submit").click();
     });
+    $("#location-common a").click(function(e) {
+        e.preventDefault();
+        $("#location-dir").val($(this).data("path"));
+        $("#location-submit").click();
+    });
     $("#location-submit").click(function(e) {
         $(".location-ctrl").prop("disabled", true);
+        // default to /
         if (!$("#location-dir").val()) $("#location-dir").val("/");
         $.ajax({
             url: "browser.php",
             method: "post",
+            // location normalisation handled by browser.php
             data: {"dir": $("#location-dir").val()},
             success: function(data, stat, xhr) {
                 var files = data.split("\n");
                 path = files.splice(0, 1)[0];
+                // go back in history
                 if (back) {
                     pos--;
                     back = false;
+                // go forward in history
                 } else if (forward) {
                     pos++;
                     forward = false;
                 } else {
+                    // clear history after current point
                     history = history.slice(0, pos + 1);
+                    // not a duplicate, add to history
                     if (history[history.length - 1] !== path) {
                         history.push(path);
                         pos++;
@@ -96,37 +113,71 @@ if ($access) {
                 $("#location-dir").val(path).prop("disabled", false);
                 $(".location-ctrl").prop("disabled", false);
                 $("#files-list").empty();
-                for (var i in files) {
-                    if (!files[i]) continue;
+                // panel for each file
+                $(files).each(function(i, str) {
+                    if (!str) return;
                     var root = $("<div/>").addClass("col-lg-2 col-md-3 col-sm-4 col-xs-6");
-                    var file = files[i].split("//");
-                    var title = $("<h3/>").addClass("panel-title")
-                                    .append($("<img/>").attr("src", "res/ico/" + file[1] + ".png"))
-                                    .append(" " + file[0]);
-                    var head = $("<div/>").addClass("panel-heading").append(title);
-                    var body = $("<div/>").addClass("panel-body").html(file[2] + "<br/>" + file[3]);
-                    var foot = $("<div/>").addClass("panel-footer small")
-                                    .append($("<span/>").append(file[4] + ":" + file[5]))
-                                    .append($("<span/>").addClass("pull-right").append(file[6]));
-                    $("#files-list").append(root.append($("<div/>").addClass("panel panel-default").append(head).append(body).append(foot)));
+                    // file = [filename, type, size, date, short date, owner, group, perms]
+                    var file = str.split("//");
+                    var head = $("<div/>").addClass("panel-heading")
+                        .append($("<img/>").attr("src", "res/ico/" + file[1] + ".png"))
+                        .append(" " + file[0]).attr("title", file[0]);
+                    var body = $("<div/>").addClass("panel-body small");
+                    var perms = $("<span/>").addClass("pull-right").text(file[5] + ":" + file[6]);
+                    perms.mouseover(function(e) {
+                        $(this).text(file[7]);
+                    }).mouseout(function(e) {
+                        $(this).text(file[5] + ":" + file[6]);
+                    });
+                    var date = $("<span/>").text(file[4]);
+                    date.mouseover(function(e) {
+                        $(this).text(file[3]);
+                    }).mouseout(function(e) {
+                        $(this).text(file[4]);
+                    });
+                    body.append(perms).append($("<p/>").append(file[2])).append(date);
+                    var panel = $("<div/>").addClass("panel panel-default").append(head).append(body);
+                    $("#files-list").append(root.append(panel));
+                    // double-click folder to navigate to
+                    if (file[1] === "dir") {
+                        panel.dblclick(function(e) {
+                            $("#location-dir").val(path + (path === "/" ? "" : "/") + file[0]);
+                            $("#location-submit").click();
+                        });
+                    }
+                });
+                // no files in folder
+                if ($("#files-list").is(":empty")) {
+                    var info = $("<div/>").addClass("alert alert-info").text("Nothing in this folder.");
+                    $("#files-list").append($("<div/>").addClass("col-xs-12").append(info));
                 }
                 $("#location-dir").focus();
             },
             error: function(xhr, stat, err) {
-                $("#location-dir").prop("disabled", false).parent().addClass("has-error");
-                setTimeout(function() {
-                    $("#location-dir").parent().removeClass("has-error");
-                }, 150);
-                setTimeout(function() {
-                    $("#location-dir").parent().addClass("has-error");
-                }, 300);
-                setTimeout(function() {
-                    $("#location-dir").parent().removeClass("has-error");
-                }, 450);
-                setTimeout(function() {
-                    $("#location-dir").focus();
+                // 400 if directory does not exist
+                if (xhr.status === 400) {
+                    // blink location bar
+                    $("#location-dir").prop("disabled", false).parent().addClass("has-error");
+                    setTimeout(function() {
+                        $("#location-dir").parent().removeClass("has-error");
+                    }, 150);
+                    setTimeout(function() {
+                        $("#location-dir").parent().addClass("has-error");
+                    }, 300);
+                    setTimeout(function() {
+                        $("#location-dir").parent().removeClass("has-error");
+                    }, 450);
+                    setTimeout(function() {
+                        $("#location-dir").focus();
+                        $(".location-ctrl").prop("disabled", false);
+                    }, 600);
+                } else {
+                    $("#files-list .alert-danger").remove();
+                    var info = $("<div/>").addClass("alert alert-danger").text("Failed to query files (" + xhr.status + " " + err + ").");
+                    $("#files-list").prepend($("<div/>").addClass("col-xs-12").append(info));
                     $(".location-ctrl").prop("disabled", false);
-                }, 600);
+                    $("#location-dir").focus();
+                }
             },
         });
     });

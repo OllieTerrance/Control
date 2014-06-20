@@ -29,6 +29,15 @@ foreach ($files as $i => $file) {
     } elseif (is_dir($path)) {
         $type = "dir";
     }
+    // pretty date
+    $time = filemtime($path);
+    $date = date("j M y", $time);
+    if (date("dmY", $time) === date("dmY")) {
+        $date = "Today";
+    } elseif (date("dmY", $time) === date("dmY", strtotime("yesterday"))) {
+        $date = "Yesterday";
+    }
+    $date .= date(", H:i", $time);
     // user and group names
     $user = posix_getpwuid(fileowner($path));
     $group = posix_getgrgid(filegroup($path));
@@ -38,7 +47,7 @@ foreach ($files as $i => $file) {
     $perms = ($chmod & 256 ? "r" : "-") . ($chmod & 128 ? "w" : "-") . ($chmod & 64 ? "x" : "-") . " "
              . ($chmod & 32 ? "r" : "-") . ($chmod & 16 ? "w" : "-") . ($chmod & 8 ? "x" : "-") . " "
              . ($chmod & 4 ? "r" : "-") . ($chmod & 2 ? "w" : "-") . ($chmod & 1 ? "x" : "-");
-    // output line
+    // output line "filename//type//size//date//short date//owner//group//perms"
     print($file . "//" . $type . "//" . size(filesize($path)) . "//" . date("d/m/Y H:i:s", filemtime($path)) . "//"
-          . $user["name"] . "//" . $group["name"] . "//" . $perms . "\n");
+          . $date . "//" . $user["name"] . "//" . $group["name"] . "//" . $perms . "\n");
 }
