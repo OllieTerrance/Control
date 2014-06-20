@@ -1,0 +1,42 @@
+body {
+    padding-top: 60px;
+}
+img {
+    vertical-align: text-top;
+}
+td {
+    vertical-align: middle !important;
+}
+.alert {
+    margin-bottom: 10px;
+}
+.modal {
+    overflow-y: auto;
+}
+.page {
+    display: none;
+}
+#logo {
+    margin-top: 20px;
+}
+@media (max-width: 767px) {
+    #logo {
+        max-height: 200px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+#files-list {
+    margin-top: 15px;
+}
+#files-list h3.panel-title {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+#ip-warning {
+    display: none;
+}
+#password {
+    margin-top: 15px;
+}
