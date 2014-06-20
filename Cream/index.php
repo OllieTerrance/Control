@@ -1,10 +1,12 @@
 <?
 error_reporting(E_ALL);
 ini_set("display_errors", 1);
-require_once("data.php");
+require_once "data.php";
 $ip = $_SERVER["REMOTE_ADDR"];
 session_start();
+// local if accessing by internal hostname or IP
 $local = in_array($_SERVER["HTTP_HOST"], array("cream", "192.168.1.100"));
+// remote if logged in with password
 $remote = array_key_exists("login", $_SESSION);
 $access = $local || $remote;
 ?><!DOCTYPE html>
@@ -47,6 +49,7 @@ $desc = "Your IP: " . $ip;
 if ($local) {
     $host = "Unknown device";
     $ico = "";
+    // known device, show name/icon
     if (array_key_exists($ip, $devices)) {
         if (count($devices[$ip]) === 1) {
             $host = $devices[$ip][0][0];
@@ -105,8 +108,10 @@ if ($access) {
                     <table class="table table-bordered table-striped">
 <?
     foreach ($devices as $xip => $xdevs) {
-        $class = ($xip === $ip) ? ' class="success"' : (($xip === "192.168.1.100") ? ' class="info"' : "");
+        // highlight green if current device, blue if first device (i.e. server)
+        $class = ($xip === $ip) ? ' class="success"' : (($xip === current(array_keys($devices))) ? ' class="info"' : "");
         $devs = array();
+        // iterate device list for current IP
         foreach ($xdevs as $xdev) {
             $ico = array_key_exists(1, $xdev) ? '<img src="res/ico/' . $xdev[1] . '.png"/> ' : "";
             array_push($devs, $ico . $xdev[0]);

@@ -12,7 +12,7 @@ The `data.php` file holds a list of devices and IP addresses.  It should look li
 ```php
 <?
 $devices = array(
-    "IP address" => array(array("device name", "icon")),
+    "IP address" => array(array("device name", "icon"), /* ... */),
     // ...
 );
 $media = array(

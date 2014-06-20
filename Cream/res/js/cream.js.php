@@ -93,7 +93,6 @@ if ($access) {
                         pos++;
                     }
                 }
-                console.log(history, pos);
                 $("#location-dir").val(path).prop("disabled", false);
                 $(".location-ctrl").prop("disabled", false);
                 $("#files-list").empty();
