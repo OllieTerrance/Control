@@ -18,6 +18,7 @@ $access = $local || $remote;
         <title>www@cream</title>
         <link rel="shortcut icon" href="res/ico/cream.png">
         <link href="lib/css/bootstrap.min.css" rel="stylesheet">
+        <link href="lib/css/font-awesome.min.css" rel="stylesheet">
         <link href="res/css/cream.css" rel="stylesheet">
     </head>
     <body>
@@ -164,13 +165,13 @@ if ($access) {
                     <div class="col-xs-12">
                         <div class="input-group">
                             <div class="input-group-btn">
-                                <button id="location-back" type="button" class="location-ctrl btn btn-default"><img src="res/ico/back.png"/></button>
-                                <button id="location-up" type="button" class="location-ctrl btn btn-default"><img src="res/ico/up.png"/></button>
-                                <button id="location-forward" type="button" class="location-ctrl btn btn-default"><img src="res/ico/forward.png"/></button>
+                                <button id="location-back" type="button" class="location-ctrl btn btn-default"><i class="fa fa-arrow-left"></i></button>
+                                <button id="location-up" type="button" class="location-ctrl btn btn-default"><i class="fa fa-arrow-up"></i></button>
+                                <button id="location-forward" type="button" class="location-ctrl btn btn-default"><i class="fa fa-arrow-right"></i></button>
                             </div>
                             <input id="location-dir" class="location-ctrl form-control" value="/home/user" placeholder="/">
                             <div class="input-group-btn">
-                                <button id="location-submit" type="submit" class="location-ctrl btn btn-primary"><img src="res/ico/enter.png"/></button>
+                                <button id="location-submit" type="submit" class="location-ctrl btn btn-primary"><i class="fa fa-arrow-circle-right"></i></button>
                                 <button type="button" class="location-ctrl btn btn-primary dropdown-toggle" data-toggle="dropdown">
                                     <span class="caret"></span>
                                     <span class="sr-only">Toggle dropdown</span>

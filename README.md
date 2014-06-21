@@ -4,6 +4,18 @@ Introduction
 Cream (as in the Sonic the Hedgehog character) is a custom status page used on my Raspberry Pi web server.  It allows viewing the status of running services, connected devices, files and more.
 
 
+Running from source
+===================
+
+This project requires the following libraries:
+
+* [Bootstrap](http://getboostrap.com)
+* [Font Awesome](http://fontawesome.io)
+* [jQuery](http://jquery.com)
+
+Batteries are not included - the CSS and JavaScript files need to be placed in a `lib` folder with appropriate `css`, `js` and `fonts` subfolders (check `index.php` for where files are linked to).
+
+
 Data file
 =========
 
@@ -20,3 +32,5 @@ $media = array(
     // ...
 );
 ```
+
+Multiple device names can share an IP address (e.g. a dual-boot computer), and will be displayed together.

@@ -119,23 +119,25 @@ if ($access) {
                     var root = $("<div/>").addClass("col-lg-2 col-md-3 col-sm-4 col-xs-6");
                     // file = [filename, type, size, date, short date, owner, group, perms]
                     var file = str.split("//");
+                    var icon = (file[1] === "dir" ? "folder-open" : "file");
+                    if (file[2]) icon += "-o";
                     var head = $("<div/>").addClass("panel-heading")
-                        .append($("<img/>").attr("src", "res/ico/" + file[1] + ".png"))
+                        .append($("<i/>").addClass("fa fa-" + icon).attr("title", file[2] ? "Link to " + file[2] : ""))
                         .append(" " + file[0]).attr("title", file[0]);
                     var body = $("<div/>").addClass("panel-body small");
-                    var perms = $("<span/>").addClass("pull-right").text(file[5] + ":" + file[6]);
+                    var perms = $("<span/>").addClass("pull-right").text(file[6] + ":" + file[7]);
                     perms.mouseover(function(e) {
-                        $(this).text(file[7]);
+                        $(this).text(file[8]);
                     }).mouseout(function(e) {
-                        $(this).text(file[5] + ":" + file[6]);
+                        $(this).text(file[6] + ":" + file[7]);
                     });
-                    var date = $("<span/>").text(file[4]);
+                    var date = $("<span/>").text(file[5]);
                     date.mouseover(function(e) {
-                        $(this).text(file[3]);
-                    }).mouseout(function(e) {
                         $(this).text(file[4]);
+                    }).mouseout(function(e) {
+                        $(this).text(file[5]);
                     });
-                    body.append(perms).append($("<p/>").append(file[2])).append(date);
+                    body.append(perms).append($("<p/>").append(file[3])).append(date);
                     var panel = $("<div/>").addClass("panel panel-default").append(head).append(body);
                     $("#files-list").append(root.append(panel));
                     // double-click folder to navigate to

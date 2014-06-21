@@ -22,13 +22,9 @@ foreach ($files as $i => $file) {
     // skip . and ..
     if ($i < 2) continue;
     $path = $dir . "/" . $file;
-    $type = "file";
-    // symbolic link
-    if (is_link($path)) {
-        $type = "link";
-    } elseif (is_dir($path)) {
-        $type = "dir";
-    }
+    $type = is_dir($path) ? "dir" : "file";
+    // symbolic link target
+    $link = is_link($path) ? readlink($path) : "";
     // pretty date
     $time = filemtime($path);
     $date = date("j M y", $time);
@@ -45,9 +41,10 @@ foreach ($files as $i => $file) {
     $chmod = fileperms($path) & 0777;
     // pretty print permissions (e.g. rwx r-x r-x)
     $perms = ($chmod & 256 ? "r" : "-") . ($chmod & 128 ? "w" : "-") . ($chmod & 64 ? "x" : "-") . " "
-             . ($chmod & 32 ? "r" : "-") . ($chmod & 16 ? "w" : "-") . ($chmod & 8 ? "x" : "-") . " "
-             . ($chmod & 4 ? "r" : "-") . ($chmod & 2 ? "w" : "-") . ($chmod & 1 ? "x" : "-");
-    // output line "filename//type//size//date//short date//owner//group//perms"
-    print($file . "//" . $type . "//" . size(filesize($path)) . "//" . date("d/m/Y H:i:s", filemtime($path)) . "//"
-          . $date . "//" . $user["name"] . "//" . $group["name"] . "//" . $perms . "\n");
+        . ($chmod & 32 ? "r" : "-") . ($chmod & 16 ? "w" : "-") . ($chmod & 8 ? "x" : "-") . " "
+        . ($chmod & 4 ? "r" : "-") . ($chmod & 2 ? "w" : "-") . ($chmod & 1 ? "x" : "-");
+    // output line "filename//type//link//size//date//short date//owner//group//perms"
+    print($file . "//" . $type . "//" . $link . "//" . size(filesize($path)) . "//"
+        . date("d/m/Y H:i:s", filemtime($path)) . "//". $date . "//"
+        . $user["name"] . "//" . $group["name"] . "//" . $perms . "\n");
 }
