@@ -1,5 +1,5 @@
 <?
-header("content-type: application/javascript");
+header("Content-Type: application/javascript");
 $ip = $_SERVER["REMOTE_ADDR"];
 session_start();
 $local = in_array($_SERVER["HTTP_HOST"], array("cream", "192.168.1.100"));
@@ -86,6 +86,7 @@ if ($access) {
     $("#location-submit").click(function(e) {
         loading = true;
         $(".location-ctrl").prop("disabled", true);
+        $("#files-list").css("opacity", 0.5);
         // default to /
         if (!$("#location-dir").val()) $("#location-dir").val("/");
         $.ajax({
@@ -115,7 +116,7 @@ if ($access) {
                 }
                 $("#location-dir").val(path).prop("disabled", false);
                 $(".location-ctrl").prop("disabled", false);
-                $("#files-list").empty();
+                $("#files-list").empty().css("opacity", 1);
                 // panel for each file
                 $(files).each(function(i, str) {
                     if (!str) return;
@@ -150,45 +151,62 @@ if ($access) {
                             $("#location-dir").val(path + (path === "/" ? "" : "/") + file[0]);
                             $("#location-submit").click();
                         });
+                    // double-click file to view preview
                     } else {
-                        var type = file[2].split("/");
-                        switch (type[0]) {
-                            // double-click plain text file to view content
-                            case "text":
-                                panel.dblclick(function(e) {
-                                    if (loading) return;
-                                    $("#files-display-title").text(file[0]);
-                                    $("#files-display-content").empty().append($("<div/>").addClass("alert alert-info").text("Loading..."));
-                                    $("#files-display").modal("show");
-                                    $.ajax({
-                                        url: "files.php",
-                                        method: "post",
-                                        data: {
-                                            "dir": path,
-                                            "file": file[0]
-                                        },
-                                        dataType: "text",
-                                        success: function(data, stat, xhr) {
-                                            $("#files-display-content").empty().append($("<pre/>").text(data));
-                                        },
-                                        error: function(xhr, stat, err) {
-                                            var info = "Unable to fetch file content.";
-                                            switch (xhr.status) {
-                                                // file doesn't exist
-                                                case 400:
-                                                    info = "File no longer exists.";
-                                                    break;
-                                                // file can't be accessed by server user
-                                                case 403:
-                                                    info = "File not accessible to user <?=$user;?>.";
-                                                    break;
-                                            }
-                                            $("#files-display-content").empty().append($("<div/>").addClass("alert alert-danger").text(info));
-                                        }
-                                    });
-                                });
-                                break;
-                        }
+                        panel.dblclick(function(e) {
+                            if (loading) return;
+                            $("#files-display-title").text(file[0]);
+                            $("#files-display-content").empty().append($("<div/>").addClass("alert alert-info").text("Loading..."));
+                            $("#files-display").modal("show");
+                            $.ajax({
+                                url: "files.php",
+                                method: "post",
+                                data: {
+                                    "dir": path,
+                                    "file": file[0]
+                                },
+                                dataType: "text",
+                                success: function(data, stat, xhr) {
+                                    var type = file[2].split("/");
+                                    var root;
+                                    switch (type[0]) {
+                                        case "text":
+                                            root = $("<pre/>").text(data);
+                                            break;
+                                        case "image":
+                                            root = $("<img/>").attr("src", "files.php?key=" + data);
+                                            break;
+                                        case "audio":
+                                            var source = $("<source/>").attr("src", "files.php?key=" + data).attr("type", file[2]);
+                                            root = $("<audio/>").attr("controls", "").append(source);
+                                            break;
+                                        case "video":
+                                            var source = $("<source/>").attr("src", "files.php?key=" + data).attr("type", file[2]);
+                                            root = $("<video/>").attr("controls", "").append(source);
+                                            break;
+                                    }
+                                    $("#files-display-content").empty().append(root);
+                                },
+                                error: function(xhr, stat, err) {
+                                    var info = "Unable to fetch file content.";
+                                    switch (xhr.status) {
+                                        // file type can't be previewed
+                                        case 400:
+                                            info = "File type " + file[2] + " cannot be previewed.";
+                                            break;
+                                        // file can't be accessed by server user
+                                        case 403:
+                                            info = "File not accessible to user <?=$user;?>.";
+                                            break;
+                                        // file doesn't exist
+                                        case 409:
+                                            info = "File no longer exists.";
+                                            break;
+                                    }
+                                    $("#files-display-content").empty().append($("<div/>").addClass("alert alert-danger").text(info));
+                                }
+                            });
+                        });
                     }
                 });
                 // no files in folder
@@ -224,9 +242,13 @@ if ($access) {
                     $(".location-ctrl").prop("disabled", false);
                     $("#location-dir").focus();
                 }
+                $("#files-list").css("opacity", 1);
                 loading = false;
             },
         });
+    });
+    $("#files-display").on("hidden.bs.modal", function(e) {
+        $("#files-display-content").empty();
     });
     $(".nav-tab").click(function(e) {
         $(".nav-tab").parent().removeClass("active");
