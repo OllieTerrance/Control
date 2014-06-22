@@ -5,6 +5,8 @@ session_start();
 $local = in_array($_SERVER["HTTP_HOST"], array("cream", "192.168.1.100"));
 $remote = array_key_exists("login", $_SESSION);
 $access = $local || $remote;
+// system user of PHP process
+$user = current(posix_getpwuid(posix_geteuid()));
 ?>$(document).ready(function() {
 <?
 if ($access) {
@@ -57,7 +59,7 @@ if ($access) {
     // file browser
     var history = [];
     var pos = -1;
-    var back = false, forward = false;
+    var back = false, forward = false, loading = false;
     var path = "/home/user";
     $("#location-back").click(function(e) {
         if (pos <= 0) return;
@@ -82,13 +84,14 @@ if ($access) {
         $("#location-submit").click();
     });
     $("#location-submit").click(function(e) {
+        loading = true;
         $(".location-ctrl").prop("disabled", true);
         // default to /
         if (!$("#location-dir").val()) $("#location-dir").val("/");
         $.ajax({
-            url: "browser.php",
+            url: "files.php",
             method: "post",
-            // location normalisation handled by browser.php
+            // location normalisation handled by files.php
             data: {"dir": $("#location-dir").val()},
             success: function(data, stat, xhr) {
                 var files = data.split("\n");
@@ -117,13 +120,13 @@ if ($access) {
                 $(files).each(function(i, str) {
                     if (!str) return;
                     var root = $("<div/>").addClass("col-lg-2 col-md-3 col-sm-4 col-xs-6");
-                    // file = [filename, type, size, date, short date, owner, group, perms]
+                    // file = [name, link, mime, size, date, short date, owner, group, perms]
                     var file = str.split("//");
-                    var icon = (file[1] === "dir" ? "folder-open" : "file");
-                    if (file[2]) icon += "-o";
+                    var icon = (file[2] === "directory" ? "folder-open" : "file");
+                    if (file[1]) icon += "-o";
                     var head = $("<div/>").addClass("panel-heading")
-                        .append($("<i/>").addClass("fa fa-" + icon).attr("title", file[2] ? "Link to " + file[2] : ""))
-                        .append(" " + file[0]).attr("title", file[0]);
+                        .append($("<i/>").addClass("fa fa-" + icon).attr("title", (file[1] ? "→ " + file[1] + "\n" : "") + file[2]))
+                        .append(" ").append($("<span/>").text(file[0]).attr("title", file[0]));
                     var body = $("<div/>").addClass("panel-body small");
                     var perms = $("<span/>").addClass("pull-right").text(file[6] + ":" + file[7]);
                     perms.mouseover(function(e) {
@@ -141,11 +144,51 @@ if ($access) {
                     var panel = $("<div/>").addClass("panel panel-default").append(head).append(body);
                     $("#files-list").append(root.append(panel));
                     // double-click folder to navigate to
-                    if (file[1] === "dir") {
+                    if (file[2] === "directory") {
                         panel.dblclick(function(e) {
+                            if (loading) return;
                             $("#location-dir").val(path + (path === "/" ? "" : "/") + file[0]);
                             $("#location-submit").click();
                         });
+                    } else {
+                        var type = file[2].split("/");
+                        switch (type[0]) {
+                            // double-click plain text file to view content
+                            case "text":
+                                panel.dblclick(function(e) {
+                                    if (loading) return;
+                                    $("#files-display-title").text(file[0]);
+                                    $("#files-display-content").empty().append($("<div/>").addClass("alert alert-info").text("Loading..."));
+                                    $("#files-display").modal("show");
+                                    $.ajax({
+                                        url: "files.php",
+                                        method: "post",
+                                        data: {
+                                            "dir": path,
+                                            "file": file[0]
+                                        },
+                                        dataType: "text",
+                                        success: function(data, stat, xhr) {
+                                            $("#files-display-content").empty().append($("<pre/>").text(data));
+                                        },
+                                        error: function(xhr, stat, err) {
+                                            var info = "Unable to fetch file content.";
+                                            switch (xhr.status) {
+                                                // file doesn't exist
+                                                case 400:
+                                                    info = "File no longer exists.";
+                                                    break;
+                                                // file can't be accessed by server user
+                                                case 403:
+                                                    info = "File not accessible to user <?=$user;?>.";
+                                                    break;
+                                            }
+                                            $("#files-display-content").empty().append($("<div/>").addClass("alert alert-danger").text(info));
+                                        }
+                                    });
+                                });
+                                break;
+                        }
                     }
                 });
                 // no files in folder
@@ -154,9 +197,10 @@ if ($access) {
                     $("#files-list").append($("<div/>").addClass("col-xs-12").append(info));
                 }
                 $("#location-dir").focus();
+                loading = false;
             },
             error: function(xhr, stat, err) {
-                // 400 if directory does not exist
+                // 400 if directory doesn't exist
                 if (xhr.status === 400) {
                     // blink location bar
                     $("#location-dir").prop("disabled", false).parent().addClass("has-error");
@@ -180,6 +224,7 @@ if ($access) {
                     $(".location-ctrl").prop("disabled", false);
                     $("#location-dir").focus();
                 }
+                loading = false;
             },
         });
     });

@@ -2,10 +2,12 @@
 error_reporting(E_ALL);
 ini_set("display_errors", 1);
 require_once "data.php";
+// first IP in devices list is server
+$server = current(array_keys($devices));
 $ip = $_SERVER["REMOTE_ADDR"];
 session_start();
 // local if accessing by internal hostname or IP
-$local = in_array($_SERVER["HTTP_HOST"], array("cream", "192.168.1.100"));
+$local = in_array($_SERVER["HTTP_HOST"], array("cream", $server));
 // remote if logged in with password
 $remote = array_key_exists("login", $_SESSION);
 $access = $local || $remote;
@@ -110,7 +112,7 @@ if ($access) {
 <?
     foreach ($devices as $xip => $xdevs) {
         // highlight green if current device, blue if first device (i.e. server)
-        $class = ($xip === $ip) ? ' class="success"' : (($xip === current(array_keys($devices))) ? ' class="info"' : "");
+        $class = ($xip === $ip) ? ' class="success"' : (($xip === $server) ? ' class="info"' : "");
         $devs = array();
         // iterate device list for current IP
         foreach ($xdevs as $xdev) {
@@ -147,7 +149,7 @@ if ($access) {
                 <div class="col-lg-7 col-lg-offset-1 col-sm-8 col-sm-offset-1">
                     <h2>External access?</h2>
                     <p>You are currently viewing this page externally.  In order to view more details, you need to be viewing this page from a device on the network.</p>
-                    <div id="ip-warning" class="alert alert-info">Your external IP address seems to match that of the server, so you are likely already connected successfully.  Go ahead and try accessing <a class="alert-link" href="http://cream/">by hostname</a> or <a class="alert-link" href="http://192.168.1.100/">internal IP address</a> to continue.</div>
+                    <div id="ip-warning" class="alert alert-info">Your external IP address seems to match that of the server, so you are likely already connected successfully.  Go ahead and try accessing <a class="alert-link" href="http://cream/">by hostname</a> or <a class="alert-link" href="http://<?=$server;?>/">internal IP address</a> to continue.</div>
                     <p>Alternatively, you can <a href data-target="#login-prompt" data-toggle="modal">login</a> to the server with a password.</p>
                     <h2>Expecting a website here?</h2>
                     <p>You have reached this page by navigating to <code><?=$_SERVER["HTTP_HOST"];?></code>.  This happens when attempting to access a domain name that points to this server's external IP address (currently <code id="ip">...</code>), but does not have an appropriate virtual host configured locally.</p>
@@ -193,7 +195,21 @@ if ($access) {
 ?>
         </div>
 <?
-if (!$access) {
+if ($access) {
+?>
+        <div id="files-display" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="files-display" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 id="files-display-title" class="modal-title"></h4>
+                    </div>
+                    <div id="files-display-content" class="modal-body"></div>
+                </div>
+            </div>
+        </div>
+<?
+} else {
 ?>
         <div id="login-prompt" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="login-prompt" aria-hidden="true">
             <div class="modal-dialog">
