@@ -40,8 +40,8 @@ $access = $local || $remote;
 if ($access) {
 ?>
                     <ul class="nav navbar-nav">
-                        <li><a id="nav-home" class="nav-tab" href="#home">Home</a></li>
-                        <li><a id="nav-files" class="nav-tab" href="#files">Files</a></li>
+                        <li><a id="nav-home" class="nav-tab" href="#home"><i class="fa fa-home"></i> Home</a></li>
+                        <li><a id="nav-files" class="nav-tab" href="#files"><i class="fa fa-folder-open"></i> Files</a></li>
                     </ul>
 <?
 }
@@ -162,28 +162,47 @@ if ($access) {
 if ($access) {
 ?>
             <div id="files" class="page">
+                <div class="btn-group pull-right">
+                    <button type="button" class="location-ctrl btn btn-default dropdown-toggle" data-toggle="dropdown">
+                        <i class="fa fa-hand-o-right"></i>
+                        <span class="hidden-xs">Actions</span>
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu pull-right" role="menu">
+                        <li><a href><i class="fa fa-fw fa-plus-square"></i> New folder</a></li>
+                        <li><a href><i class="fa fa-fw fa-cloud-upload"></i> Upload here</a></li>
+                    </ul>
+                </div>
+                <div class="btn-group pull-right">
+                    <button id="location-up" type="button" class="location-ctrl btn btn-default">
+                        <i class="fa fa-arrow-up"></i>
+                        <span class="hidden-xs">Up one level</span>
+                    </button>
+                    <button type="button" class="location-ctrl btn btn-default dropdown-toggle" data-toggle="dropdown">
+                        <i class="fa fa-rocket"></i>
+                        <span class="hidden-xs">Places</span>
+                        <span class="caret"></span>
+                    </button>
+                    <ul id="location-common" class="dropdown-menu pull-right" role="menu">
+                        <li><a href data-path="/home/user"><i class="fa fa-fw fa-home"></i> <code>/home/user</code></a></li>
+                        <li><a href data-path="/var/www"><i class="fa fa-fw fa-globe"></i> <code>/var/www</code></a></li>
+                        <li><a href data-path="/var/res"><i class="fa fa-fw fa-book"></i> <code>/var/res</code></a></li>
+                    </ul>
+                </div>
                 <h2>File browser</h2>
                 <form class="row" role="form">
                     <div class="col-xs-12">
                         <div class="input-group">
                             <div class="input-group-btn">
-                                <button id="location-back" type="button" class="location-ctrl btn btn-default"><i class="fa fa-arrow-left"></i></button>
-                                <button id="location-up" type="button" class="location-ctrl btn btn-default"><i class="fa fa-arrow-up"></i></button>
-                                <button id="location-forward" type="button" class="location-ctrl btn btn-default"><i class="fa fa-arrow-right"></i></button>
+                                <button id="location-back" type="button" class="location-ctrl btn btn-default" title="Back"><i class="fa fa-arrow-left"></i></button>
+                                <button id="location-forward" type="button" class="location-ctrl btn btn-default" title="Forward"><i class="fa fa-arrow-right"></i></button>
                             </div>
                             <input id="location-dir" class="location-ctrl form-control" value="/home/user" placeholder="/">
                             <div class="input-group-btn">
-                                <button id="location-submit" type="submit" class="location-ctrl btn btn-primary"><i class="fa fa-arrow-circle-right"></i></button>
-                                <button type="button" class="location-ctrl btn btn-primary dropdown-toggle" data-toggle="dropdown">
-                                    <span class="caret"></span>
-                                    <span class="sr-only">Toggle dropdown</span>
+                                <button id="location-submit" type="submit" class="location-ctrl btn btn-primary" title="Go">
+                                    <i class="fa fa-arrow-circle-right"></i>
+                                    <span class="hidden-xs">Go</span>
                                 </button>
-                                <ul id="location-common" class="dropdown-menu pull-right" role="menu">
-                                    <li class="dropdown-header">Common</li>
-                                    <li><a href data-path="/home/user">Home <code>/home/user</code></a></li>
-                                    <li><a href data-path="/var/www">WWW <code>/var/www</code></a></li>
-                                    <li><a href data-path="/var/res">Libraries <code>/var/res</code></a></li>
-                                </ul>
                             </div>
                         </div>
                     </div>

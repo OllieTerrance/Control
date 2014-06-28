@@ -26,13 +26,28 @@ td {
         margin-right: auto;
     }
 }
+#files .btn-group.pull-right {
+    margin-left: 10px;
+}
 #files-list {
     margin-top: 15px;
+    cursor: default;
+    user-select: none;
+    -o-user-select:none;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
 }
 #files-list .panel-heading {
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
+}
+#files-display-content {
+    padding-bottom: 15px;
+}
+#files-display-content pre {
+    margin-bottom: 5px;
 }
 #files-display-content video, #files-display-content audio {
     width: 100%;
