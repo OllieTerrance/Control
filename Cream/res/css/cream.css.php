@@ -1,4 +1,11 @@
-body {
+<?
+header("Content-Type: text/css");
+$ip = $_SERVER["REMOTE_ADDR"];
+session_start();
+$local = in_array($_SERVER["HTTP_HOST"], array("cream", "192.168.1.100"));
+$remote = array_key_exists("login", $_SESSION);
+$access = $local || $remote;
+?>body {
     padding-top: 60px;
 }
 img {
@@ -10,11 +17,11 @@ td {
 .alert {
     margin-bottom: 10px;
 }
+.modal-body .alert {
+    margin-bottom: 5px;
+}
 .modal {
     overflow-y: auto;
-}
-.page {
-    display: none;
 }
 #logo {
     margin-top: 20px;
@@ -26,8 +33,14 @@ td {
         margin-right: auto;
     }
 }
-#files .btn-group.pull-right {
-    margin-left: 10px;
+<?
+if ($access) {
+?>
+.page {
+    display: none;
+}
+#page-files .btn-group.pull-right {
+    margin-left: 8px;
 }
 #files-list {
     margin-top: 15px;
@@ -52,9 +65,21 @@ td {
 #files-display-content video, #files-display-content audio {
     width: 100%;
 }
+#files-newfolder-hint {
+    margin: 10px 0 0;
+}
+#files-newfolder-name {
+    margin-top: 15px;
+}
+<?
+} else {
+?>
 #ip-warning {
     display: none;
 }
-#password {
+#login-password {
     margin-top: 15px;
 }
+<?
+}
+?>

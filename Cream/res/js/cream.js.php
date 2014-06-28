@@ -67,15 +67,19 @@ if ($access) {
         back = true;
         $("#location-submit").click();
     });
-    $("#location-up").click(function(e) {
-        var parts = path.split("/");
-        $("#location-dir").val(parts.slice(0, parts.length - 1).join("/"));
-        $("#location-submit").click();
-    });
     $("#location-forward").click(function(e) {
         if (pos >= history.length - 1) return;
         $("#location-dir").val(history[pos + 1]);
         forward = true;
+        $("#location-submit").click();
+    });
+    $("#location-reload").click(function(e) {
+        $("#location-dir").val(path);
+        $("#location-submit").click();
+    });
+    $("#location-up").click(function(e) {
+        var parts = path.split("/");
+        $("#location-dir").val(parts.slice(0, parts.length - 1).join("/"));
         $("#location-submit").click();
     });
     $("#location-common a").click(function(e) {
@@ -86,7 +90,7 @@ if ($access) {
     $("#location-submit").click(function(e) {
         loading = true;
         $(".location-ctrl").prop("disabled", true);
-        $("#files-list").css("opacity", 0.5);
+        $("#files-list").css("opacity", 0.6);
         // default to /
         if (!$("#location-dir").val()) $("#location-dir").val("/");
         $.ajax({
@@ -121,7 +125,7 @@ if ($access) {
                 $(files).each(function(i, str) {
                     if (!str) return;
                     var root = $("<div/>").addClass("col-lg-2 col-md-3 col-sm-4 col-xs-6");
-                    // file = [name, link, mime, size, date, short date, owner, group, perms]
+                    // file = [name, link, mime, size, full date, short date, owner, perms, colour]
                     var file = str.split("//");
                     var icon = (file[2] === "directory" ? "folder-open" : "file");
                     if (file[1]) icon += "-o";
@@ -129,11 +133,11 @@ if ($access) {
                         .append($("<i/>").addClass("fa fa-" + icon).attr("title", (file[1] ? "→ " + file[1] + "\n" : "") + file[2]))
                         .append(" ").append($("<span/>").text(file[0]).attr("title", file[0]));
                     var body = $("<div/>").addClass("panel-body small");
-                    var perms = $("<span/>").addClass("pull-right").text(file[6] + ":" + file[7]);
+                    var perms = $("<span/>").addClass("pull-right").text(file[6]);
                     perms.mouseover(function(e) {
-                        $(this).text(file[8]);
+                        $(this).text(file[7]);
                     }).mouseout(function(e) {
-                        $(this).text(file[6] + ":" + file[7]);
+                        $(this).text(file[6]);
                     });
                     var date = $("<span/>").text(file[5]);
                     date.mouseover(function(e) {
@@ -142,7 +146,7 @@ if ($access) {
                         $(this).text(file[5]);
                     });
                     body.append(perms).append($("<p/>").append(file[3])).append(date);
-                    var panel = $("<div/>").addClass("panel panel-default").append(head).append(body);
+                    var panel = $("<div/>").addClass("panel panel-" + file[8]).append(head).append(body);
                     $("#files-list").append(root.append(panel));
                     // double-click folder to navigate to
                     if (file[2] === "directory") {
@@ -192,18 +196,18 @@ if ($access) {
                                     switch (xhr.status) {
                                         // file type can't be previewed
                                         case 400:
-                                            info = "File type " + file[2] + " cannot be previewed.";
+                                            info = "File type <code>" + file[2] + "</code> cannot be previewed.";
                                             break;
                                         // file can't be accessed by server user
-                                        case 403:
-                                            info = "File not accessible to user <?=$user;?>.";
+                                        case 401:
+                                            info = "File not accessible to user <code><?=$user;?></code>.";
                                             break;
                                         // file doesn't exist
                                         case 409:
                                             info = "File no longer exists.";
                                             break;
                                     }
-                                    $("#files-display-content").empty().append($("<div/>").addClass("alert alert-danger").text(info));
+                                    $("#files-display-content").empty().append($("<div/>").addClass("alert alert-danger").html(info));
                                 }
                             });
                         });
@@ -250,22 +254,72 @@ if ($access) {
     $("#files-display").on("hidden.bs.modal", function(e) {
         $("#files-display-content").empty();
     });
+    $("#files-newfolder").on("shown.bs.modal", function(e) {
+        $("#files-newfolder-name").focus();
+    }).on("hidden.bs.modal", function(e) {
+        $("#files-newfolder-name").val("");
+    });
+    $("#files-newfolder-submit").on("click", function(e) {
+        $("#files-newfolder-name").prop("disabled", true).parent().removeClass("has-error");
+        $("#files-newfolder-submit").prop("disabled", true).val("Loading...");
+        $.ajax({
+            url: "files.php",
+            method: "post",
+            data: {
+                "dir": path,
+                "newfolder": $("#files-newfolder-name").val()
+            },
+            success: function(data, stat, xhr) {
+                $("#files-newfolder-name").prop("disabled", false);
+                $("#files-newfolder-submit").prop("disabled", false).empty().append($("<i/>").addClass("fa fa-check")).append(" Create");
+                $("#files-newfolder").on("hidden.bs.modal", function(e) {
+                    $("#location-dir").val(path);
+                    $("#location-submit").click();
+                }).modal("hide");
+            },
+            error: function(xhr, stat, err) {
+                window.x = xhr;
+                $("#files-newfolder-name").prop("disabled", false).parent().addClass("has-error");
+                $("#files-newfolder-submit").val("Already exists!");
+                setTimeout(function() {
+                    $("#files-newfolder-name").parent().removeClass("has-error");
+                }, 150);
+                setTimeout(function() {
+                    $("#files-newfolder-name").parent().addClass("has-error");
+                }, 300);
+                setTimeout(function() {
+                    $("#files-newfolder-name").parent().removeClass("has-error");
+                }, 450);
+                setTimeout(function() {
+                    $("#files-newfolder-name").focus();
+                    $("#files-newfolder-submit").prop("disabled", false).empty().append($("<i/>").addClass("fa fa-check")).append(" Create");
+                }, 600);
+            },
+        });
+        e.preventDefault();
+    });
     $(".nav-tab").click(function(e) {
         $(".nav-tab").parent().removeClass("active");
         $(".page").hide();
         $(this).parent().addClass("active");
-        $("#" + this.id.substr(4)).show();
+        $("#page-" + this.id.substr(4)).show();
     });
-    $(document).ready(function() {
+    var hashChange = function() {
         var tabs = ["home", "files"];
-        var tab = tabs[0];
+        var tab;
         if (location.hash) {
             var sel = location.hash.substr(1);
             if (tabs.indexOf(sel) > -1) tab = sel;
         }
+        if (!tab) {
+            tab = tabs[0];
+            location.hash = "#home";
+        }
         $("#nav-" + tab).click();
         $("#location-submit").click();
-    });
+    };
+    $(document).ready(hashChange);
+    $(window).on("hashchange", hashChange);
 <?
 } else {
 ?>
@@ -279,39 +333,38 @@ if ($access) {
             $("#ip").replaceWith("unknown");
         }
     });
-    $("#login-prompt").on("shown.bs.modal", function(e) {
-        $("#password").focus();
+    $("#login").on("shown.bs.modal", function(e) {
+        $("#login-password").focus();
     }).on("hidden.bs.modal", function(e) {
-        $("#password").val("");
+        $("#login-password").val("");
     });
     $("#login-submit").on("click", function(e) {
-        $("#password").prop("disabled", true).parent().removeClass("has-error");
-        $("#login-submit").prop("disabled", true).val("Loading...");
+        $("#login-password").prop("disabled", true).parent().removeClass("has-error");
+        $("#login-submit").prop("disabled", true);
         $.ajax({
             url: "login.php",
             method: "post",
-            data: {"password": $("#password").val()},
+            data: {"password": $("#login-password").val()},
             success: function(data, stat, xhr) {
-                $("#password").parent().addClass("has-success");
-                $("#login-prompt").on("hidden.bs.modal", function(e) {
+                $("#login-password").parent().addClass("has-success");
+                $("#login").on("hidden.bs.modal", function(e) {
                     location.reload();
                 }).modal("hide");
             },
             error: function(xhr, stat, err) {
-                $("#password").prop("disabled", false).parent().addClass("has-error");
-                $("#login-submit").val("Try again!");
+                $("#login-password").prop("disabled", false).parent().addClass("has-error");
                 setTimeout(function() {
-                    $("#password").parent().removeClass("has-error");
+                    $("#login-password").parent().removeClass("has-error");
                 }, 150);
                 setTimeout(function() {
-                    $("#password").parent().addClass("has-error");
+                    $("#login-password").parent().addClass("has-error");
                 }, 300);
                 setTimeout(function() {
-                    $("#password").parent().removeClass("has-error");
+                    $("#login-password").parent().removeClass("has-error");
                 }, 450);
                 setTimeout(function() {
-                    $("#password").focus();
-                    $("#login-submit").prop("disabled", false).val("Login");
+                    $("#login-password").focus();
+                    $("#login-submit").prop("disabled", false);
                 }, 600);
             },
         });

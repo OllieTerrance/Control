@@ -11,6 +11,8 @@ $local = in_array($_SERVER["HTTP_HOST"], array("cream", $server));
 // remote if logged in with password
 $remote = array_key_exists("login", $_SESSION);
 $access = $local || $remote;
+// system user of PHP process
+$user = current(posix_getpwuid(posix_geteuid()));
 ?><!DOCTYPE html>
 <html lang="en">
     <head>
@@ -21,7 +23,7 @@ $access = $local || $remote;
         <link rel="shortcut icon" href="res/ico/cream.png">
         <link href="lib/css/bootstrap.min.css" rel="stylesheet">
         <link href="lib/css/font-awesome.min.css" rel="stylesheet">
-        <link href="res/css/cream.css" rel="stylesheet">
+        <link href="res/css/cream.css.php" rel="stylesheet">
     </head>
     <body>
         <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -76,7 +78,7 @@ if ($local) {
 <?
 if ($remote) {
 ?>
-                        <li><a id="logout" href>Logout</a></li>
+                        <li><a id="logout" href><i class="fa fa-unlink"></i> Logout</a></li>
 <?
 }
 ?>
@@ -88,7 +90,7 @@ if ($remote) {
 <?
 if ($access) {
 ?>
-            <div id="home" class="page row">
+            <div id="page-home" class="page row">
 <?
 } else {
 ?>
@@ -150,7 +152,7 @@ if ($access) {
                     <h2>External access?</h2>
                     <p>You are currently viewing this page externally.  In order to view more details, you need to be viewing this page from a device on the network.</p>
                     <div id="ip-warning" class="alert alert-info">Your external IP address seems to match that of the server, so you are likely already connected successfully.  Go ahead and try accessing <a class="alert-link" href="http://cream/">by hostname</a> or <a class="alert-link" href="http://<?=$server;?>/">internal IP address</a> to continue.</div>
-                    <p>Alternatively, you can <a href data-target="#login-prompt" data-toggle="modal">login</a> to the server with a password.</p>
+                    <p>Alternatively, you can <a href data-target="#login" data-toggle="modal">login</a> to the server with a password.</p>
                     <h2>Expecting a website here?</h2>
                     <p>You have reached this page by navigating to <code><?=$_SERVER["HTTP_HOST"];?></code>.  This happens when attempting to access a domain name that points to this server's external IP address (currently <code id="ip">...</code>), but does not have an appropriate virtual host configured locally.</p>
                 </div>
@@ -161,7 +163,7 @@ if ($access) {
 <?
 if ($access) {
 ?>
-            <div id="files" class="page">
+            <div id="page-files" class="page">
                 <div class="btn-group pull-right">
                     <button type="button" class="location-ctrl btn btn-default dropdown-toggle" data-toggle="dropdown">
                         <i class="fa fa-hand-o-right"></i>
@@ -169,11 +171,15 @@ if ($access) {
                         <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu pull-right" role="menu">
-                        <li><a href><i class="fa fa-fw fa-plus-square"></i> New folder</a></li>
+                        <li><a href data-target="#files-newfolder" data-toggle="modal"><i class="fa fa-fw fa-plus-square"></i> New folder</a></li>
                         <li><a href><i class="fa fa-fw fa-cloud-upload"></i> Upload here</a></li>
                     </ul>
                 </div>
                 <div class="btn-group pull-right">
+                    <button id="location-reload" type="button" class="location-ctrl btn btn-default">
+                        <i class="fa fa-refresh"></i>
+                        <span class="hidden-xs">Reload</span>
+                    </button>
                     <button id="location-up" type="button" class="location-ctrl btn btn-default">
                         <i class="fa fa-arrow-up"></i>
                         <span class="hidden-xs">Up one level</span>
@@ -216,7 +222,27 @@ if ($access) {
 <?
 if ($access) {
 ?>
-        <div id="files-display" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="files-display" aria-hidden="true">
+        <div id="files-newfolder" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title">Enter folder name</h4>
+                    </div>
+                    <form role="form">
+                        <div class="modal-body form-group">
+                            <p id="files-newfolder-hint" class="help-block">Note that user <code><?=$user;?></code> must have write access to the current directory.</p>
+                            <input id="files-newfolder-name" type="text" class="form-control">
+                        </div>
+                        <div class="modal-footer">
+                            <button id="files-newfolder-submit" type="submit" class="btn btn-primary"><i class="fa fa-check"></i> Create</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div id="files-display" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -230,7 +256,7 @@ if ($access) {
 <?
 } else {
 ?>
-        <div id="login-prompt" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="login-prompt" aria-hidden="true">
+        <div id="login" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -239,10 +265,10 @@ if ($access) {
                     </div>
                     <form role="form">
                         <div class="modal-body form-group">
-                            <input id="password" type="password" class="form-control">
+                            <input id="login-password" type="password" class="form-control">
                         </div>
                         <div class="modal-footer">
-                            <input id="login-submit" type="submit" class="btn btn-primary" value="Login">
+                            <button id="login-submit" type="submit" class="btn btn-primary"><i class="fa fa-key"></i> Login</button>
                         </div>
                     </form>
                 </div>
