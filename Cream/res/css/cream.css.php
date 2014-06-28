@@ -71,6 +71,25 @@ if ($access) {
 #files-newfolder-name {
     margin-top: 15px;
 }
+#files-upload-drag {
+    margin-bottom: 0;
+    padding: 40px 0;
+    text-align: center;
+    border: 5px dashed #dddddd;
+}
+#files-upload-drag {
+    margin-bottom: 0;
+    padding: 40px 0;
+    text-align: center;
+    border: 5px dashed #dddddd;
+}
+#files-upload-drag p {
+    margin: 0;
+}
+#files-upload-drag #files-upload-list {
+    display: none;
+    margin-top: 10px;
+}
 <?
 } else {
 ?>

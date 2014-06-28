@@ -120,6 +120,8 @@ if ($access) {
                 }
                 $("#location-dir").val(path).prop("disabled", false);
                 $(".location-ctrl").prop("disabled", false);
+                var writable = files.splice(0, 1)[0];
+                if (!writable) $("#location-actions").prop("disabled", true);
                 $("#files-list").empty().css("opacity", 1);
                 // panel for each file
                 $(files).each(function(i, str) {
@@ -297,6 +299,59 @@ if ($access) {
             },
         });
         e.preventDefault();
+    });
+    $("#files-upload").on("hidden.bs.modal", function(e) {
+        if (!$("#files-upload-list").is(":empty")) {
+            $("#location-dir").val(path);
+            $("#location-submit").click();
+            $("#files-upload-list").empty().hide();
+        }
+    });
+    function uploadFiles(files) {
+        $(files).each(function(i, file) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                $.ajax({
+                    url: "files.php",
+                    method: "post",
+                    data: {
+                        "dir": path,
+                        "upload": e.target.result,
+                        "name": file.name
+                    },
+                    success: function(resp, stat, xhr) {
+                        $("#files-upload-list").show().append("<code>" + file.name + "</code><br>");
+                    },
+                    error: function(xhr, stat, err) {
+                        window.a = arguments;
+                    }
+                });
+            };
+            reader.readAsDataURL(files[i]);
+        });
+    }
+    $("#files-upload-drag").on("dragenter", function(e) {
+        e.stopPropagation();
+        e.preventDefault();
+        $(this).css("border-color", "#428bca");
+    }).on("dragleave", function(e) {
+        e.stopPropagation();
+        e.preventDefault();
+        $(this).css("border-color", "#dddddd");
+    }).on("dragover", function(e) {
+        e.stopPropagation();
+        e.preventDefault();
+    }).on("drop", function(e) {
+        e.stopPropagation();
+        e.preventDefault();
+        uploadFiles(e.originalEvent.dataTransfer.files);
+    });
+    $("#files-upload-browse").click(function(e) {
+        e.preventDefault();
+        $("#files-upload-file").click();
+    });
+    $("#files-upload-file").change(function(e) {
+        uploadFiles($("#files-upload-file").prop("files"));
     });
     $(".nav-tab").click(function(e) {
         $(".nav-tab").parent().removeClass("active");

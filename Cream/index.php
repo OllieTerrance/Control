@@ -165,14 +165,14 @@ if ($access) {
 ?>
             <div id="page-files" class="page">
                 <div class="btn-group pull-right">
-                    <button type="button" class="location-ctrl btn btn-default dropdown-toggle" data-toggle="dropdown">
+                    <button id="location-actions" type="button" class="location-ctrl btn btn-default dropdown-toggle" data-toggle="dropdown">
                         <i class="fa fa-hand-o-right"></i>
                         <span class="hidden-xs">Actions</span>
                         <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu pull-right" role="menu">
                         <li><a href data-target="#files-newfolder" data-toggle="modal"><i class="fa fa-fw fa-plus-square"></i> New folder</a></li>
-                        <li><a href><i class="fa fa-fw fa-cloud-upload"></i> Upload here</a></li>
+                        <li><a href data-target="#files-upload" data-toggle="modal"><i class="fa fa-fw fa-cloud-upload"></i> Upload here</a></li>
                     </ul>
                 </div>
                 <div class="btn-group pull-right">
@@ -239,6 +239,23 @@ if ($access) {
                             <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancel</button>
                         </div>
                     </form>
+                </div>
+            </div>
+        </div>
+        <div id="files-upload" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title">Upload files</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div id="files-upload-drag">
+                            <p>Drag files here to upload, or <a id="files-upload-browse" href>click here</a> to browse.</p>
+                            <p id="files-upload-list"></p>
+                        </div>
+                        <input id="files-upload-file" type="file" class="hidden" multiple>
+                    </div>
                 </div>
             </div>
         </div>

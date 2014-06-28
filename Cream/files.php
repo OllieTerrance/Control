@@ -49,6 +49,13 @@ if (isset($_POST["newfolder"])) {
     if (file_exists($folder) || strstr($_POST["newfolder"], "/")) return http_response_code(400);
     // create the folder
     if (!mkdir($folder, 0775)) return http_response_code(400);
+// upload files to directory
+} elseif (isset($_POST["upload"])) {
+    $name = isset($_POST["name"]) ? $_POST["name"] : "upload";
+    $file = realpath($dir) . "/" . $name;
+    // decode data URI and store to file
+    $content = file_get_contents($_POST["upload"]);
+    file_put_contents($file, $content);
 // return file content by POST
 } elseif (isset($_POST["file"])) {
     $file = realpath($dir . "/" . $_POST["file"]);
@@ -81,8 +88,8 @@ if (isset($_POST["newfolder"])) {
     }
 // list directory contents
 } else {
-    // print resolved directory name
-    print($dir . "\n");
+    // print resolved directory name and if writable
+    print($dir . "\n" . (is_writable($dir) ? "w" : "") . "\n");
     foreach (scandir($dir) as $i => $file) {
         // skip . and ..
         if ($i < 2) continue;
@@ -120,7 +127,7 @@ if (isset($_POST["newfolder"])) {
                 . ($chmod & 4 ? "r" : "-") . ($chmod & 2 ? "w" : "-") . ($chmod & 1 ? "x" : "-");
         }
         if (is_readable($path)) {
-            $colour = $owner["name"] === $user ? "success" : ($group["name"] === $user ? "info" : "default");
+            $colour = $owner["name"] === $user ? "success" : (is_writable($path) ? "info" : "default");
         } else {
             $colour = file_exists($path) ? "danger" : "warning";
         }
