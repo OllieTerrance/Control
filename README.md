@@ -33,4 +33,6 @@ $media = array(
 );
 ```
 
+Icons are PNGs, referenced by name (minus extension), and stored in `res/ico`.
+
 Multiple device names can share an IP address (e.g. a dual-boot computer), and will be displayed together.
