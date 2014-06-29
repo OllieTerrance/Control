@@ -60,7 +60,7 @@ if ($access) {
     var history = [];
     var pos = -1;
     var back = false, forward = false, loading = false;
-    var path = "/home/user";
+    var path = $("#location-dir").val();
     $("#location-back").click(function(e) {
         if (pos <= 0) return;
         $("#location-dir").val(history[pos - 1]);
@@ -120,8 +120,7 @@ if ($access) {
                 }
                 $("#location-dir").val(path).prop("disabled", false);
                 $(".location-ctrl").prop("disabled", false);
-                var writable = files.splice(0, 1)[0];
-                if (!writable) $("#location-actions").prop("disabled", true);
+                var access = files.splice(0, 1)[0];
                 $("#files-list").empty().css("opacity", 1);
                 // panel for each file
                 $(files).each(function(i, str) {
@@ -131,25 +130,36 @@ if ($access) {
                     var file = str.split("//");
                     var icon = (file[2] === "directory" ? "folder-open" : "file");
                     if (file[1]) icon += "-o";
-                    var head = $("<div/>").addClass("panel-heading")
-                        .append($("<i/>").addClass("fa fa-" + icon).attr("title", (file[1] ? "→ " + file[1] + "\n" : "") + file[2]))
-                        .append(" ").append($("<span/>").text(file[0]).attr("title", file[0]));
-                    var body = $("<div/>").addClass("panel-body small");
-                    var perms = $("<span/>").addClass("pull-right").text(file[6]);
-                    perms.mouseover(function(e) {
-                        $(this).text(file[7]);
-                    }).mouseout(function(e) {
-                        $(this).text(file[6]);
-                    });
-                    var date = $("<span/>").text(file[5]);
-                    date.mouseover(function(e) {
-                        $(this).text(file[4]);
-                    }).mouseout(function(e) {
-                        $(this).text(file[5]);
-                    });
-                    body.append(perms).append($("<p/>").append(file[3])).append(date);
-                    var panel = $("<div/>").addClass("panel panel-" + file[8]).append(head).append(body);
+                    var perms = $("<span/>").addClass("pull-right").text(file[6])
+                        .mouseover(function(e) {
+                            $(this).text(file[7]);
+                        }).mouseout(function(e) {
+                            $(this).text(file[6]);
+                        });
+                    var date = $("<span/>").text(file[5])
+                        .mouseover(function(e) {
+                            $(this).text(file[4]);
+                        }).mouseout(function(e) {
+                            $(this).text(file[5]);
+                        });
+                    var panel = $("<div/>").addClass("panel panel-" + file[8]).data("colour", file[8])
+                        .append($("<div/>").addClass("panel-heading")
+                            .append($("<i/>").addClass("fa fa-" + icon).attr("title", (file[1] ? "→ " + file[1] + "\n" : "") + file[2]))
+                            .append(" ").append($("<span/>").text(file[0]).attr("title", file[0])))
+                        .append($("<div/>").addClass("panel-body small")
+                            .append(perms).append($("<p/>").append(file[3])).append(date));
                     $("#files-list").append(root.append(panel));
+                    // single-click to select
+                    panel.click(function(e) {
+                        if (e.ctrlKey) {
+                            panel.toggleClass("panel-" + panel.data("colour")).toggleClass("panel-primary");
+                        } else {
+                            $("#files-list .panel-primary").each(function(i, pnl) {
+                                $(pnl).removeClass("panel-primary").addClass("panel-" + $(pnl).data("colour"));
+                            });
+                            panel.removeClass("panel-" + panel.data("colour")).addClass("panel-primary");
+                        }
+                    });
                     // double-click folder to navigate to
                     if (file[2] === "directory") {
                         panel.dblclick(function(e) {
@@ -215,9 +225,15 @@ if ($access) {
                         });
                     }
                 });
+                if (access !== "w") $("#location-actions").prop("disabled", true);
                 // no files in folder
                 if ($("#files-list").is(":empty")) {
-                    var info = $("<div/>").addClass("alert alert-info").text("Nothing in this folder.");
+                    var info = $("<div/>");
+                    if (access) {
+                        info.addClass("alert alert-info").text("Nothing in this folder.");
+                    } else {
+                        info.addClass("alert alert-danger").html("Folder not accessible to user <code><?=$user;?></code>.");
+                    }
                     $("#files-list").append($("<div/>").addClass("col-xs-12").append(info));
                 }
                 $("#location-dir").focus();

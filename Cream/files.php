@@ -23,7 +23,7 @@ function mime($path) {
     $mime = finfo_file($finfo, $path);
     error_reporting($errep);
     // default to plain text type if empty
-    return $mime ? $mime : "unknown";
+    return $mime ? $mime : (is_dir($path) ? "directory" : "unknown");
 }
 // return file content by GET
 if (isset($_GET["key"])) {
@@ -88,8 +88,10 @@ if (isset($_POST["newfolder"])) {
     }
 // list directory contents
 } else {
-    // print resolved directory name and if writable
-    print($dir . "\n" . (is_writable($dir) ? "w" : "") . "\n");
+    // print resolved directory name and if readable/writable
+    print($dir . "\n");
+    print((is_writable($dir) ? "w" : (is_readable($dir) ? "r" : "")) . "\n");
+    if (!is_readable($dir)) return;
     foreach (scandir($dir) as $i => $file) {
         // skip . and ..
         if ($i < 2) continue;
@@ -101,7 +103,7 @@ if (isset($_POST["newfolder"])) {
         $fdate = "unknown";
         $owner = "unknown";
         $perms = "unknown";
-        if (is_readable($path)) {
+        if (file_exists($path)) {
             // symbolic link target
             $link = is_link($path) ? readlink($path) : "";
             $size = size(filesize($path));

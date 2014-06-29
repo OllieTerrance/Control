@@ -50,9 +50,9 @@ if ($access) {
 ?>
                     <ul class="nav navbar-nav navbar-right">
 <?
-$desc = "Your IP: " . $ip;
+$desc = '<i class="fa fa-globe"></i> Your IP: ' . $ip;
 if ($local) {
-    $host = "Unknown device";
+    $host = '<i class="fa fa-question"></i> Unknown device';
     $ico = "";
     // known device, show name/icon
     if (array_key_exists($ip, $devices)) {
@@ -71,14 +71,14 @@ if ($local) {
     }
     $desc = $ico . $host . " (" . $ip . ")";
 } elseif ($remote) {
-    $desc = "External access (" . $ip . ")";
+    $desc = '<i class="fa fa-globe"></i> External access (' . $ip . ')';
 }
 ?>
                         <li><a href="http://<?=$ip?>/"><?=$desc;?></a></li>
 <?
 if ($remote) {
 ?>
-                        <li><a id="logout" href><i class="fa fa-unlink"></i> Logout</a></li>
+                        <li><a id="logout" href><i class="fa fa-sign-out"></i> Logout</a></li>
 <?
 }
 ?>
@@ -190,9 +190,12 @@ if ($access) {
                         <span class="caret"></span>
                     </button>
                     <ul id="location-common" class="dropdown-menu pull-right" role="menu">
+                        <li><a href data-path="/"><i class="fa fa-fw fa-desktop"></i> <code>/</code></a></li>
                         <li><a href data-path="/home/user"><i class="fa fa-fw fa-home"></i> <code>/home/user</code></a></li>
+                        <li><a href data-path="/home/www-data"><i class="fa fa-fw fa-home"></i> <code>/home/www-data</code></a></li>
                         <li><a href data-path="/var/www"><i class="fa fa-fw fa-globe"></i> <code>/var/www</code></a></li>
                         <li><a href data-path="/var/res"><i class="fa fa-fw fa-book"></i> <code>/var/res</code></a></li>
+                        <li><a href data-path="/etc/nginx"><i class="fa fa-fw fa-cogs"></i> <code>/etc/nginx</code></a></li>
                     </ul>
                 </div>
                 <h2>File browser</h2>
@@ -203,9 +206,9 @@ if ($access) {
                                 <button id="location-back" type="button" class="location-ctrl btn btn-default" title="Back"><i class="fa fa-arrow-left"></i></button>
                                 <button id="location-forward" type="button" class="location-ctrl btn btn-default" title="Forward"><i class="fa fa-arrow-right"></i></button>
                             </div>
-                            <input id="location-dir" class="location-ctrl form-control" value="/home/user" placeholder="/">
+                            <input id="location-dir" class="location-ctrl form-control" value="/" placeholder="/">
                             <div class="input-group-btn">
-                                <button id="location-submit" type="submit" class="location-ctrl btn btn-primary" title="Go">
+                                <button id="location-submit" type="submit" class="location-ctrl btn btn-primary">
                                     <i class="fa fa-arrow-circle-right"></i>
                                     <span class="hidden-xs">Go</span>
                                 </button>
