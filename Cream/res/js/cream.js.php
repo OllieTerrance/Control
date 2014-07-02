@@ -1,19 +1,13 @@
 <?
+require_once "../php/common.php";
 header("Content-Type: application/javascript");
-$ip = $_SERVER["REMOTE_ADDR"];
-session_start();
-$local = in_array($_SERVER["HTTP_HOST"], array("cream", "192.168.1.100"));
-$remote = array_key_exists("login", $_SESSION);
-$access = $local || $remote;
-// system user of PHP process
-$user = current(posix_getpwuid(posix_geteuid()));
 ?>$(document).ready(function() {
 <?
 if ($access) {
 ?>
     // check service status on load
     $.ajax({
-        url: "services.php",
+        url: "res/php/services.php",
         success: function(data, stat, xhr) {
             var table = $("<table/>").attr("id", "services").addClass("table table-bordered table-condensed");
             // lines of " [ x ]  y" where x is +/-, y is name
@@ -47,7 +41,7 @@ if ($access) {
         e.preventDefault();
         $("#logout").text("Loading...").parent().addClass("active");
         $.ajax({
-            url: "login.php?logout",
+            url: "res/php/login.php?logout",
             success: function(data, stat, xhr) {
                 location.reload();
             },
@@ -94,7 +88,7 @@ if ($access) {
         // default to /
         if (!$("#location-dir").val()) $("#location-dir").val("/");
         $.ajax({
-            url: "files.php",
+            url: "res/php/files.php",
             method: "post",
             // location normalisation handled by files.php
             data: {"dir": $("#location-dir").val()},
@@ -175,7 +169,7 @@ if ($access) {
                             $("#files-display-content").empty().append($("<div/>").addClass("alert alert-info").text("Loading..."));
                             $("#files-display").modal("show");
                             $.ajax({
-                                url: "files.php",
+                                url: "res/php/files.php",
                                 method: "post",
                                 data: {
                                     "dir": path,
@@ -190,14 +184,14 @@ if ($access) {
                                             root = $("<pre/>").text(data);
                                             break;
                                         case "image":
-                                            root = $("<img/>").attr("src", "files.php?key=" + data);
+                                            root = $("<img/>").attr("src", "res/php/files.php?key=" + data);
                                             break;
                                         case "audio":
-                                            var source = $("<source/>").attr("src", "files.php?key=" + data).attr("type", file[2]);
+                                            var source = $("<source/>").attr("src", "res/php/files.php?key=" + data).attr("type", file[2]);
                                             root = $("<audio/>").attr("controls", "").append(source);
                                             break;
                                         case "video":
-                                            var source = $("<source/>").attr("src", "files.php?key=" + data).attr("type", file[2]);
+                                            var source = $("<source/>").attr("src", "res/php/files.php?key=" + data).attr("type", file[2]);
                                             root = $("<video/>").attr("controls", "").append(source);
                                             break;
                                     }
@@ -281,7 +275,7 @@ if ($access) {
         $("#files-newfolder-name").prop("disabled", true).parent().removeClass("has-error");
         $("#files-newfolder-submit").prop("disabled", true).val("Loading...");
         $.ajax({
-            url: "files.php",
+            url: "res/php/files.php",
             method: "post",
             data: {
                 "dir": path,
@@ -328,7 +322,7 @@ if ($access) {
             var reader = new FileReader();
             reader.onload = function(e) {
                 $.ajax({
-                    url: "files.php",
+                    url: "res/php/files.php",
                     method: "post",
                     data: {
                         "dir": path,
@@ -395,7 +389,7 @@ if ($access) {
 } else {
 ?>
     $.ajax({
-        url: "ip.php",
+        url: "res/php/ip.php",
         success: function(data, stat, xhr) {
             $("#ip").text(data);
             if (data === "<?=$ip;?>") $("#ip-warning").show();
@@ -413,7 +407,7 @@ if ($access) {
         $("#login-password").prop("disabled", true).parent().removeClass("has-error");
         $("#login-submit").prop("disabled", true);
         $.ajax({
-            url: "login.php",
+            url: "res/php/login.php",
             method: "post",
             data: {"password": $("#login-password").val()},
             success: function(data, stat, xhr) {

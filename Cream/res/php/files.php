@@ -1,8 +1,4 @@
 <?
-error_reporting(E_ALL);
-ini_set("display_errors", 1);
-// system user of PHP process
-$user = current(posix_getpwuid(posix_geteuid()));
 // list files in a directory
 require_once "auth.php";
 // convert bytes to readable format

@@ -62,6 +62,10 @@ if ($access) {
 #files-display-content pre {
     margin-bottom: 5px;
 }
+#files-display-content img {
+    max-width: 100%;
+    margin-bottom: 5px;
+}
 #files-display-content video, #files-display-content audio {
     width: 100%;
 }

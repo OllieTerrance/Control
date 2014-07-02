@@ -1,4 +1,6 @@
 <?
+// handle remote logins
+require_once "common.php";
 require_once "/var/res/php/keystore.php";
 session_start();
 // clear session and logout
