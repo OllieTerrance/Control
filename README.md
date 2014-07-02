@@ -19,7 +19,7 @@ Batteries are not included - the CSS and JavaScript files need to be placed in a
 Data file
 =========
 
-The `data.php` file holds a list of devices and IP addresses.  It should look like the following:
+The `res/php/data.php` file holds lists of devices and IP addresses, media devices, and common places.  It should look like the following:
 
 ```php
 <?
@@ -31,8 +31,12 @@ $media = array(
     array("device name", "description", "icon"),
     // ...
 );
+$places = array(
+    "directory path" => "icon",
+    // ...
+);
 ```
 
-Icons are PNGs, referenced by name (minus extension), and stored in `res/ico`.
+For devices and media, icons are PNGs, referenced by name (minus extension), and stored in `res/ico`.  Place icons come from Font Awesome, leaving off the `fa-` prefix.
 
-Multiple device names can share an IP address (e.g. a dual-boot computer), and will be displayed together.
+Devices is required, the rest are optional (not specifying them will hide them from view).  The first device listed should be the server Cream is running on.  Multiple device names can share an IP address (e.g. a dual-boot computer), and will be displayed together.

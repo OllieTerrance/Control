@@ -117,20 +117,26 @@ if ($access) {
     }
 ?>
                     </table>
+<?
+    if (!empty($media)) {
+?>
                     <h2>Media</h2>
                     <table class="table table-bordered table-striped">
 <?
-    foreach ($media as $xdevs) {
-        $ico = array_key_exists(2, $xdevs) ? '<img src="res/ico/' . $xdevs[2] . '.png"/> ' : "";
+        foreach ($media as $xdevs) {
+            $ico = array_key_exists(2, $xdevs) ? '<img src="res/ico/' . $xdevs[2] . '.png"/> ' : "";
 ?>
                         <tr>
                             <td><?=$ico;?><?=$xdevs[0];?></td>
                             <td><?=$xdevs[1];?></td>
                         </tr>
 <?
-    }
+        }
 ?>
                     </table>
+<?
+    }
+?>
                 </div>
 <?
 } else {
@@ -171,19 +177,26 @@ if ($access) {
                         <i class="fa fa-arrow-up"></i>
                         <span class="hidden-xs">Up one level</span>
                     </button>
+<?
+if (!empty($places)) {
+?>
                     <button type="button" class="location-ctrl btn btn-default dropdown-toggle" data-toggle="dropdown">
                         <i class="fa fa-rocket"></i>
                         <span class="hidden-xs">Places</span>
                         <span class="caret"></span>
                     </button>
                     <ul id="location-common" class="dropdown-menu pull-right" role="menu">
-                        <li><a href data-path="/"><i class="fa fa-fw fa-desktop"></i> <code>/</code></a></li>
-                        <li><a href data-path="/home/user"><i class="fa fa-fw fa-home"></i> <code>/home/user</code></a></li>
-                        <li><a href data-path="/home/www-data"><i class="fa fa-fw fa-home"></i> <code>/home/www-data</code></a></li>
-                        <li><a href data-path="/var/www"><i class="fa fa-fw fa-globe"></i> <code>/var/www</code></a></li>
-                        <li><a href data-path="/var/res"><i class="fa fa-fw fa-book"></i> <code>/var/res</code></a></li>
-                        <li><a href data-path="/etc/nginx"><i class="fa fa-fw fa-cogs"></i> <code>/etc/nginx</code></a></li>
+<?
+    foreach ($places as $place => $icon) {
+?>
+                        <li><a href data-path="<?=$place;?>"><i class="fa fa-fw fa-<?=$icon;?>"></i> <code><?=$place;?></code></a></li>
+<?
+    }
+?>
                     </ul>
+<?
+}
+?>
                 </div>
                 <h2>File browser</h2>
                 <form class="row" role="form">
