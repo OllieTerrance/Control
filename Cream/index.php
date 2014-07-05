@@ -31,6 +31,7 @@ if ($access) {
                     <ul class="nav navbar-nav">
                         <li><a id="nav-home" class="nav-tab" href="#home"><i class="fa fa-home"></i> Home</a></li>
                         <li><a id="nav-files" class="nav-tab" href="#files"><i class="fa fa-folder-open"></i> Files</a></li>
+                        <li><a id="nav-info" class="nav-tab" href="#info"><i class="fa fa-info-circle"></i> Info</a></li>
                     </ul>
 <?
 }
@@ -78,22 +79,12 @@ if ($remote) {
 if ($access) {
 ?>
             <div id="page-home" class="page row">
-<?
-} else {
-?>
-            <div class="row">
-<?
-}
-?>
                 <div class="col-lg-4 col-sm-3">
                     <img id="logo" class="img-responsive" src="res/img/cream.png"/>
                 </div>
-<?
-if ($access) {
-?>
                 <div class="col-lg-2 col-lg-offset-3 col-md-3 col-md-offset-2 col-sm-4">
                     <h2>Services</h2>
-                    <div id="services" class="alert alert-warning">Loading...</div>
+                    <div id="services"></div>
                 </div>
                 <div class="col-lg-3 col-md-4 col-sm-5">
                     <h2>Devices</h2>
@@ -138,24 +129,7 @@ if ($access) {
     }
 ?>
                 </div>
-<?
-} else {
-?>
-                <div class="col-lg-7 col-lg-offset-1 col-sm-8 col-sm-offset-1">
-                    <h2>External access?</h2>
-                    <p>You are currently viewing this page externally.  In order to view more details, you need to be viewing this page from a device on the network.</p>
-                    <div id="ip-warning" class="alert alert-info">Your external IP address seems to match that of the server, so you are likely already connected successfully.  Go ahead and try accessing <a class="alert-link" href="http://cream/">by hostname</a> or <a class="alert-link" href="http://<?=$server;?>/">internal IP address</a> to continue.</div>
-                    <p>Alternatively, you can <a href data-target="#login" data-toggle="modal">login</a> to the server with a password.</p>
-                    <h2>Expecting a website here?</h2>
-                    <p>You have reached this page by navigating to <code><?=$_SERVER["HTTP_HOST"];?></code>.  This happens when attempting to access a domain name that points to this server's external IP address (currently <code id="ip">...</code>), but does not have an appropriate virtual host configured locally.</p>
-                </div>
-<?
-}
-?>
             </div>
-<?
-if ($access) {
-?>
             <div id="page-files" class="page">
                 <div class="btn-group pull-right">
                     <button id="location-actions" type="button" class="location-ctrl btn btn-default dropdown-toggle" data-toggle="dropdown">
@@ -217,6 +191,26 @@ if (!empty($places)) {
                     </div>
                 </form>
                 <div id="files-list" class="row"></div>
+            </div>
+            <div id="page-info" class="page">
+                <h2>Processes</h2>
+                <div id="processes"></div>
+            </div>
+<?
+} else {
+?>
+            <div class="row">
+                <div class="col-lg-4 col-sm-3">
+                    <img id="logo" class="img-responsive" src="res/img/cream.png"/>
+                </div>
+                <div class="col-lg-7 col-lg-offset-1 col-sm-8 col-sm-offset-1">
+                    <h2>External access?</h2>
+                    <p>You are currently viewing this page externally.  In order to view more details, you need to be viewing this page from a device on the network.</p>
+                    <div id="ip-warning" class="alert alert-info">Your external IP address seems to match that of the server, so you are likely already connected successfully.  Go ahead and try accessing <a class="alert-link" href="http://cream/">by hostname</a> or <a class="alert-link" href="http://<?=$server;?>/">internal IP address</a> to continue.</div>
+                    <p>Alternatively, you can <a href data-target="#login" data-toggle="modal">login</a> to the server with a password.</p>
+                    <h2>Expecting a website here?</h2>
+                    <p>You have reached this page by navigating to <code><?=$_SERVER["HTTP_HOST"];?></code>.  This happens when attempting to access a domain name that points to this server's external IP address (currently <code id="ip">...</code>), but does not have an appropriate virtual host configured locally.</p>
+                </div>
             </div>
 <?
 }

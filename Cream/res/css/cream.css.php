@@ -17,8 +17,8 @@ td {
 .alert {
     margin-bottom: 10px;
 }
-.modal-body .alert {
-    margin-bottom: 5px;
+.modal-body .alert, .modal-body .progress {
+    margin-bottom: 0;
 }
 .modal {
     overflow-y: auto;
@@ -93,6 +93,13 @@ if ($access) {
 #files-upload-drag #files-upload-list {
     display: none;
     margin-top: 10px;
+}
+#processes td:not(:last-child) {
+    width: 0%;
+    white-space: nowrap;
+}
+#processes td:last-child {
+    word-break: break-all;
 }
 <?
 } else {

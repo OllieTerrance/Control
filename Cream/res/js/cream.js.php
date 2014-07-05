@@ -5,11 +5,22 @@ header("Content-Type: application/javascript");
 <?
 if ($access) {
 ?>
+    // add a progress bar to the top of an element
+    function progressBar() {
+        return $("<div/>").addClass("progress")
+            .append($("<div/>").addClass("progress-bar progress-bar-info progress-bar-striped active").css("width", "100%"));
+    }
+    // add a progress bar to the top of an element
+    function alertBar(colour, content) {
+        return $("<div/>").addClass("alert alert-" + colour).html(content);
+    }
     // check service status
+    var servicesProgress = progressBar("#services");
+    $("#services").append(servicesProgress);
     $.ajax({
         url: "res/php/services.php",
         success: function(data, stat, xhr) {
-            var table = $("<table/>").attr("id", "services").addClass("table table-bordered table-condensed");
+            var table = $("<table/>").addClass("table table-bordered table-condensed");
             // lines of " [ x ]  y" where x is +/-, y is name
             var raw = data.split("\n");
             for (var i in raw) {
@@ -30,10 +41,10 @@ if ($access) {
                 tr.append($("<td/>").addClass(colour ? "text-" + colour : "").text(raw[i].substr(8)));
                 table.append(tr);
             }
-            $("#services").replaceWith(table);
+            servicesProgress.replaceWith(table);
         },
         error: function(xhr, stat, err) {
-            $("#services").removeClass("alert-warning").addClass("alert-danger").text("Unable to query status of services.");
+            servicesProgress.replaceWith(alertBar("danger", "Unable to query status of services."));
         }
     });
     // check device status
@@ -55,6 +66,47 @@ if ($access) {
                 $(code).closest("tr").addClass("danger");
             }
         });
+    });
+    // list running processes
+    var processesProgress = progressBar("#services");
+    $("#processes").append(processesProgress);
+    $.ajax({
+        url: "res/php/ps.php",
+        success: function(data, stat, xhr) {
+            var table = $("<table/>").addClass("table table-bordered table-condensed");
+            table.append($("<thead/>").append($("<tr/>").append($.map(["ID", "User", "Name", "Description"], function(label) {
+                return $("<th/>").text(label);
+            }))));
+            var raw = data.split("\n");
+            // [pid, user, name, cmd]
+            for (var i in raw) {
+                if (!raw[i]) continue;
+                var params = raw[i].split("//");
+                var tr = $("<tr/>");
+                var colour = "";
+                switch (params[1]) {
+                    case "root":
+                        colour = "warning";
+                        break;
+                    case "<?=$user;?>":
+                        colour = "info";
+                        break;
+                }
+                tr.addClass(colour);
+                for (var j in params) {
+                    if (j == 3) {
+                        tr.append($("<td/>").append($("<code/>").text(params[j])));
+                    } else {
+                        tr.append($("<td/>").addClass(colour ? "text-" + colour : "").text(params[j]));
+                    }
+                }
+                table.append(tr);
+            }
+            processesProgress.replaceWith(table);
+        },
+        error: function(xhr, stat, err) {
+            processesProgress.replaceWith(alertBar("danger", "Unable to query a list of processes."));
+        }
     });
     // async logout button
     $("#logout").click(function(e) {
@@ -186,7 +238,7 @@ if ($access) {
                         panel.dblclick(function(e) {
                             if (loading) return;
                             $("#files-display-title").text(file[0]);
-                            $("#files-display-content").empty().append($("<div/>").addClass("alert alert-info").text("Loading..."));
+                            $("#files-display-content").empty().append(progressBar());
                             $("#files-display").modal("show");
                             $.ajax({
                                 url: "res/php/files.php",
@@ -218,22 +270,24 @@ if ($access) {
                                     $("#files-display-content").empty().append(root);
                                 },
                                 error: function(xhr, stat, err) {
-                                    var info = "Unable to fetch file content.";
+                                    var colour = "danger";
+                                    var content = "Unable to fetch file content.";
                                     switch (xhr.status) {
                                         // file type can't be previewed
                                         case 400:
-                                            info = "File type <code>" + file[2] + "</code> cannot be previewed.";
+                                            content = "File type <code>" + file[2] + "</code> cannot be previewed.";
                                             break;
                                         // file can't be accessed by server user
                                         case 401:
-                                            info = "File not accessible to user <code><?=$user;?></code>.";
+                                            content = "File not accessible to user <code><?=$user;?></code>.";
                                             break;
                                         // file doesn't exist
                                         case 409:
-                                            info = "File no longer exists.";
+                                            colour = "warning";
+                                            content = "File no longer exists.";
                                             break;
                                     }
-                                    $("#files-display-content").empty().append($("<div/>").addClass("alert alert-danger").html(info));
+                                    $("#files-display-content").empty().append(alertBar(colour, content));
                                 }
                             });
                         });
@@ -242,13 +296,13 @@ if ($access) {
                 if (access !== "w") $("#location-actions").prop("disabled", true);
                 // no files in folder
                 if ($("#files-list").is(":empty")) {
-                    var info = $("<div/>");
-                    if (access) {
-                        info.addClass("alert alert-info").text("Nothing in this folder.");
-                    } else {
-                        info.addClass("alert alert-danger").html("Folder not accessible to user <code><?=$user;?></code>.");
+                    var colour = "info";
+                    var content = "Nothing in this folder.";
+                    if (!access) {
+                        colour = "danger";
+                        content = "Folder not accessible to user <code><?=$user;?></code>.";
                     }
-                    $("#files-list").append($("<div/>").addClass("col-xs-12").append(info));
+                    $("#files-list").append($("<div/>").addClass("col-xs-12").append(alertBar(colour, content)));
                 }
                 $("#location-dir").focus();
                 loading = false;
@@ -273,8 +327,8 @@ if ($access) {
                     }, 600);
                 } else {
                     $("#files-list .alert-danger").remove();
-                    var info = $("<div/>").addClass("alert alert-danger").text("Failed to query files (" + xhr.status + " " + err + ").");
-                    $("#files-list").prepend($("<div/>").addClass("col-xs-12").append(info));
+                    var message = alertBar("danger", "Failed to query files (" + xhr.status + " " + err + ").");
+                    $("#files-list").prepend($("<div/>").addClass("col-xs-12").append(message));
                     $(".location-ctrl").prop("disabled", false);
                     $("#location-dir").focus();
                 }
@@ -293,7 +347,7 @@ if ($access) {
     });
     $("#files-newfolder-submit").on("click", function(e) {
         $("#files-newfolder-name").prop("disabled", true).parent().removeClass("has-error");
-        $("#files-newfolder-submit").prop("disabled", true).val("Loading...");
+        $("#files-newfolder-submit").prop("disabled", true);
         $.ajax({
             url: "res/php/files.php",
             method: "post",
@@ -302,8 +356,7 @@ if ($access) {
                 "newfolder": $("#files-newfolder-name").val()
             },
             success: function(data, stat, xhr) {
-                $("#files-newfolder-name").prop("disabled", false);
-                $("#files-newfolder-submit").prop("disabled", false).empty().append($("<i/>").addClass("fa fa-check")).append(" Create");
+                $("#files-newfolder-name, #files-newfolder-submit").prop("disabled", false);
                 $("#files-newfolder").on("hidden.bs.modal", function(e) {
                     $("#location-dir").val(path);
                     $("#location-submit").click();
@@ -312,7 +365,6 @@ if ($access) {
             error: function(xhr, stat, err) {
                 window.x = xhr;
                 $("#files-newfolder-name").prop("disabled", false).parent().addClass("has-error");
-                $("#files-newfolder-submit").val("Already exists!");
                 setTimeout(function() {
                     $("#files-newfolder-name").parent().removeClass("has-error");
                 }, 150);
@@ -324,7 +376,7 @@ if ($access) {
                 }, 450);
                 setTimeout(function() {
                     $("#files-newfolder-name").focus();
-                    $("#files-newfolder-submit").prop("disabled", false).empty().append($("<i/>").addClass("fa fa-check")).append(" Create");
+                    $("#files-newfolder-submit").prop("disabled", false);
                 }, 600);
             },
         });
@@ -389,8 +441,11 @@ if ($access) {
         $(this).parent().addClass("active");
         $("#page-" + this.id.substr(4)).show();
     });
+    var tabs = $.makeArray($(".nav-tab").map(function(i, tab) {
+        return tab.id.substr(4);
+    }));
+    window.t = tabs;
     var hashChange = function() {
-        var tabs = ["home", "files"];
         var tab;
         if (location.hash) {
             var sel = location.hash.substr(1);
@@ -403,8 +458,8 @@ if ($access) {
         $("#nav-" + tab).click();
         $("#location-submit").click();
     };
-    $(document).ready(hashChange);
     $(window).on("hashchange", hashChange);
+    hashChange();
 <?
 } else {
 ?>
