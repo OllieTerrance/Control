@@ -38,6 +38,14 @@ if ($access) {
 ?>
                     <ul class="nav navbar-nav navbar-right">
 <?
+if ($access) {
+?>
+                        <li id="nav-loading" class="dropdown">
+                            <a href class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-refresh fa-spin"></i> <span id="nav-loading-count"></span></a>
+                            <ul id="nav-loading-list" class="dropdown-menu" role="menu"></ul>
+                        </li>
+<?
+}
 $desc = '<i class="fa fa-globe"></i> Your IP: ' . $ip;
 if ($local) {
     $host = '<i class="fa fa-question"></i> Unknown device';

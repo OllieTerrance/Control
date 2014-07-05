@@ -36,7 +36,7 @@ td {
 <?
 if ($access) {
 ?>
-.page {
+#nav-loading, .page {
     display: none;
 }
 #page-files .btn-group.pull-right {

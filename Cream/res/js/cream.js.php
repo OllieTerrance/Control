@@ -14,10 +14,41 @@ if ($access) {
     function alertBar(colour, content) {
         return $("<div/>").addClass("alert alert-" + colour).html(content);
     }
+    // wrap AJAX calls to update loading block
+    var ajaxCount = 0;
+    var ajaxActive = 0;
+    function ajaxFinish(id) {
+        $("#" + id).remove();
+        ajaxActive--;
+        $("#nav-loading-count").text(ajaxActive);
+        if (!ajaxActive) $("#nav-loading").hide();
+    }
+    function ajaxWrap(label, obj) {
+        // incrementing ID on each call
+        var id = "nav-loading-" + (ajaxCount++);
+        $("#nav-loading-list").append($("<li/>").attr("id", id).append($("<a/>").text(label)));
+        // show loading dropdown
+        ajaxActive++;
+        $("#nav-loading-count").text(ajaxActive);
+        $("#nav-loading").show();
+        // override success/error callbacks
+        var params = $.extend({}, obj, {
+            success: function(data, stat, xhr) {
+                ajaxFinish(id);
+                if (obj.success) obj.success(data, stat, xhr);
+            },
+            error: function(data, stat, xhr) {
+                ajaxFinish(id);
+                if (obj.error) obj.error(data, stat, xhr);
+            }
+        });
+        // make the request
+        $.ajax(params);
+    }
     // check service status
     var servicesProgress = progressBar("#services");
     $("#services").append(servicesProgress);
-    $.ajax({
+    ajaxWrap("Services", {
         url: "res/php/services.php",
         success: function(data, stat, xhr) {
             var table = $("<table/>").addClass("table table-bordered table-condensed");
@@ -53,7 +84,7 @@ if ($access) {
         // current and server devices already highlighted 
         if (device === "<?=$ip;?>" || device === "<?=$server;?>") return;
         // ping the device to see if it is connected
-        $.ajax({
+        ajaxWrap("Ping: " + device, {
             url: "res/php/ping.php",
             method: "post",
             data: {"device": device},
@@ -70,7 +101,7 @@ if ($access) {
     // list running processes
     var processesProgress = progressBar("#services");
     $("#processes").append(processesProgress);
-    $.ajax({
+    ajaxWrap("Processes", {
         url: "res/php/ps.php",
         success: function(data, stat, xhr) {
             var table = $("<table/>").addClass("table table-bordered table-condensed");
@@ -158,12 +189,13 @@ if ($access) {
         $(".location-ctrl").prop("disabled", true);
         $("#files-list").css("opacity", 0.6);
         // default to /
-        if (!$("#location-dir").val()) $("#location-dir").val("/");
-        $.ajax({
+        var addr = $("#location-dir").val();
+        if (!addr) addr = "/";
+        ajaxWrap("Files: list " + addr, {
             url: "res/php/files.php",
             method: "post",
             // location normalisation handled by files.php
-            data: {"dir": $("#location-dir").val()},
+            data: {"dir": addr},
             success: function(data, stat, xhr) {
                 var files = data.split("\n");
                 path = files.splice(0, 1)[0];
@@ -240,7 +272,7 @@ if ($access) {
                             $("#files-display-title").text(file[0]);
                             $("#files-display-content").empty().append(progressBar());
                             $("#files-display").modal("show");
-                            $.ajax({
+                            ajaxWrap("Files: preview " + file[0], {
                                 url: "res/php/files.php",
                                 method: "post",
                                 data: {
@@ -348,7 +380,7 @@ if ($access) {
     $("#files-newfolder-submit").on("click", function(e) {
         $("#files-newfolder-name").prop("disabled", true).parent().removeClass("has-error");
         $("#files-newfolder-submit").prop("disabled", true);
-        $.ajax({
+        ajaxWrap("Files: fetch " + path, {
             url: "res/php/files.php",
             method: "post",
             data: {
@@ -393,7 +425,7 @@ if ($access) {
         $(files).each(function(i, file) {
             var reader = new FileReader();
             reader.onload = function(e) {
-                $.ajax({
+                ajaxWrap("Files: upload " + file.name, {
                     url: "res/php/files.php",
                     method: "post",
                     data: {
@@ -456,7 +488,7 @@ if ($access) {
             location.hash = "#home";
         }
         $("#nav-" + tab).click();
-        $("#location-submit").click();
+        if (tab === "files") $("#location-submit").click();
     };
     $(window).on("hashchange", hashChange);
     hashChange();
