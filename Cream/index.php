@@ -97,7 +97,7 @@ if ($access) {
                 </div>
                 <div class="col-lg-3 col-md-4 col-sm-5">
                     <h2>Devices</h2>
-                    <table class="table table-bordered table-striped">
+                    <table id="devices" class="table table-bordered table-striped">
 <?
     foreach ($devices as $xip => $xdevs) {
         // highlight green if current device, blue if first device (i.e. server)

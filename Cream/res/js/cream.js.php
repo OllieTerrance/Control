@@ -5,7 +5,7 @@ header("Content-Type: application/javascript");
 <?
 if ($access) {
 ?>
-    // check service status on load
+    // check service status
     $.ajax({
         url: "res/php/services.php",
         success: function(data, stat, xhr) {
@@ -35,6 +35,26 @@ if ($access) {
         error: function(xhr, stat, err) {
             $("#services").removeClass("alert-warning").addClass("alert-danger").text("Unable to query status of services.");
         }
+    });
+    // check device status
+    $("#devices code").each(function(i, code) {
+        var device = $(code).text();
+        // current and server devices already highlighted 
+        if (device === "<?=$ip;?>" || device === "<?=$server;?>") return;
+        // ping the device to see if it is connected
+        $.ajax({
+            url: "res/php/ping.php",
+            method: "post",
+            data: {"device": device},
+            success: function(data, stat, xhr) {
+                // ping successful
+                $(code).closest("tr").addClass("info");
+            },
+            error: function(xhr, stat, err) {
+                // ping timed out (408)
+                $(code).closest("tr").addClass("danger");
+            }
+        });
     });
     // async logout button
     $("#logout").click(function(e) {
