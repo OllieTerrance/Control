@@ -218,6 +218,8 @@ if (!empty($places)) {
                     <p>Alternatively, you can <a href data-target="#login" data-toggle="modal">login</a> to the server with a password.</p>
                     <h2>Expecting a website here?</h2>
                     <p>You have reached this page by navigating to <code><?=$_SERVER["HTTP_HOST"];?></code>.  This happens when attempting to access a domain name that points to this server's external IP address (currently <code id="ip">...</code>), but does not have an appropriate virtual host configured locally.</p>
+                    <h2>Contact the webmaster?</h2>
+                    <p id="contact-para">For any questions or comments, <a href data-target="#contact" data-toggle="modal">click here</a> to leave a message.</p>
                 </div>
             </div>
 <?
@@ -291,6 +293,32 @@ if ($access) {
                         </div>
                         <div class="modal-footer">
                             <button id="login-submit" type="submit" class="btn btn-primary"><i class="fa fa-key"></i> Login</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div id="contact" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title">Contact webmaster</h4>
+                    </div>
+                    <form role="form">
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <input id="contact-name" type="text" class="form-control" placeholder="Name">
+                            </div>
+                            <div class="form-group">
+                                <input id="contact-email" type="email" class="form-control" placeholder="Email">
+                            </div>
+                            <div class="form-group">
+                                <textarea id="contact-comments" class="form-control" placeholder="Comments (required)" required></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button id="contact-submit" type="submit" class="btn btn-primary"><i class="fa fa-envelope"></i> Send</button>
                         </div>
                     </form>
                 </div>

@@ -110,6 +110,9 @@ if ($access) {
 #login-password {
     margin-top: 15px;
 }
+#contact .modal-body {
+    padding-bottom: 0;
+}
 <?
 }
 ?>

@@ -2,6 +2,10 @@
 require_once "../php/common.php";
 header("Content-Type: application/javascript");
 ?>$(document).ready(function() {
+    // add a progress bar to the top of an element
+    function alertBar(colour, content) {
+        return $("<div/>").addClass("alert alert-" + colour).html(content);
+    }
 <?
 if ($access) {
 ?>
@@ -9,10 +13,6 @@ if ($access) {
     function progressBar() {
         return $("<div/>").addClass("progress")
             .append($("<div/>").addClass("progress-bar progress-bar-info progress-bar-striped active").css("width", "100%"));
-    }
-    // add a progress bar to the top of an element
-    function alertBar(colour, content) {
-        return $("<div/>").addClass("alert alert-" + colour).html(content);
     }
     // wrap AJAX calls to update loading block
     var ajaxCount = 0;
@@ -537,6 +537,47 @@ if ($access) {
                 setTimeout(function() {
                     $("#login-password").focus();
                     $("#login-submit").prop("disabled", false);
+                }, 600);
+            },
+        });
+        e.preventDefault();
+    });
+    $("#contact").on("show.bs.modal", function(e) {
+        $("#contact-alert").remove();
+    }).on("shown.bs.modal", function(e) {
+        $("#contact-name").focus();
+    }).on("hidden.bs.modal", function(e) {
+        $("#contact-name, #contact-email, #contact-comments").val("").prop("disabled", false);
+        $("#contact-submit").prop("disabled", false);
+    });
+    $("#contact-submit").on("click", function(e) {
+        $("#contact-name, #contact-email, #contact-comments, #contact-submit").prop("disabled", true).parent().removeClass("has-error");
+        $.ajax({
+            url: "res/php/contact.php",
+            method: "post",
+            data: {
+                "name": $("#contact-name").val(),
+                "email": $("#contact-email").val(),
+                "comments": $("#contact-comments").val()
+            },
+            success: function(data, stat, xhr) {
+                $("#contact-para").before(alertBar("success", "Your message has been sent.").attr("id", "contact-alert"));
+                $("#contact").modal("hide");
+            },
+            error: function(xhr, stat, err) {
+                $("#contact-name, #contact-email, #contact-comments").prop("disabled", false).parent().addClass("has-error");
+                setTimeout(function() {
+                    $("#contact-name, #contact-email, #contact-comments").parent().removeClass("has-error");
+                }, 150);
+                setTimeout(function() {
+                    $("#contact-name, #contact-email, #contact-comments").parent().addClass("has-error");
+                }, 300);
+                setTimeout(function() {
+                    $("#contact-name, #contact-email, #contact-comments").parent().removeClass("has-error");
+                }, 450);
+                setTimeout(function() {
+                    $("#contact-name").focus();
+                    $("#contact-submit").prop("disabled", false);
                 }, 600);
             },
         });
