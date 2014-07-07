@@ -1,6 +1,6 @@
 <?
 // ping a device on the network
-require_once "auth.php";
+require_once "includes/auth.php";
 $device = $_POST["device"];
 // skip unknown devices
 if (!array_key_exists($device, $config["devices"])) return http_response_code(400);

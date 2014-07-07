@@ -1,5 +1,5 @@
 <?
-require_once "../php/common.php";
+require_once "../php/includes/common.php";
 header("Content-Type: text/css");
 ?>body {
     padding-top: 60px;

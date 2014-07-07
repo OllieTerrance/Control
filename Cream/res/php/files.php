@@ -1,6 +1,6 @@
 <?
 // list files in a directory
-require_once "auth.php";
+require_once "includes/auth.php";
 // convert bytes to readable format
 function size($bytes) {
     if ($bytes >= 1073741824) return number_format($bytes / 1073741824, 2) . "GB";

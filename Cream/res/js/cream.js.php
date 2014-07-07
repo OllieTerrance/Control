@@ -1,5 +1,5 @@
 <?
-require_once "../php/common.php";
+require_once "../php/includes/common.php";
 header("Content-Type: application/javascript");
 ?>$(document).ready(function() {
     // add a progress bar to the top of an element

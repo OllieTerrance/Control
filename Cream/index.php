@@ -1,5 +1,5 @@
 <?
-require_once "res/php/common.php";
+require_once "res/php/includes/common.php";
 ?><!DOCTYPE html>
 <html lang="en">
     <head>

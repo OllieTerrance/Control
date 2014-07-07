@@ -19,7 +19,7 @@ Batteries are not included - the CSS and JavaScript files need to be placed in a
 Configuration file
 ==================
 
-The `res/php/config.php` file holds lists of devices and IP addresses, media devices, common places and more.  You can use the `config.example.php` file as a starting point.
+The `res/php/includes/config.php` file holds lists of devices and IP addresses, media devices, common places and more.  You can use the `config.example.php` file as a starting point.
 
 For devices and media, icons are PNGs, referenced by name (minus extension), and stored in `res/ico`.  Place icons come from Font Awesome, leaving off the `fa-` prefix.
 

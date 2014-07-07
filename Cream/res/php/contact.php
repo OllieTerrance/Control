@@ -1,6 +1,6 @@
 <?
 // store messages sent from the public page
-require_once "common.php";
+require_once "includes/common.php";
 // disabled if messages path not set
 if (!array_key_exists("messages", $config)) return http_response_code(401);
 // ignore empty comments
