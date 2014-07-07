@@ -10,6 +10,4 @@ if (array_key_exists("logout", $_GET)) {
 } elseif (sha1($_POST["password"]) === keystore("cream", "login")) {
     $_SESSION["login"] = true;
 // incorrect
-} else {
-    http_response_code(401);
-}
+} else return http_response_code(401);

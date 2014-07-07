@@ -1,10 +1,6 @@
 <?
+require_once "../php/common.php";
 header("Content-Type: text/css");
-$ip = $_SERVER["REMOTE_ADDR"];
-session_start();
-$local = in_array($_SERVER["HTTP_HOST"], array("cream", "192.168.1.100"));
-$remote = array_key_exists("login", $_SESSION);
-$access = $local || $remote;
 ?>body {
     padding-top: 60px;
 }
@@ -107,10 +103,7 @@ if ($access) {
 #ip-warning {
     display: none;
 }
-#login-password {
-    margin-top: 15px;
-}
-#contact .modal-body {
+#login .modal-body, #contact .modal-body {
     padding-bottom: 0;
 }
 <?

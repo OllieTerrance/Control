@@ -82,7 +82,7 @@ if ($access) {
     $("#devices code").each(function(i, code) {
         var device = $(code).text();
         // current and server devices already highlighted 
-        if (device === "<?=$ip;?>" || device === "<?=$server;?>") return;
+        if (device === "<?=$client;?>" || device === "<?=$server;?>") return;
         // ping the device to see if it is connected
         ajaxWrap("Ping: " + device, {
             url: "res/php/ping.php",
@@ -499,7 +499,7 @@ if ($access) {
         url: "res/php/ip.php",
         success: function(data, stat, xhr) {
             $("#ip").text(data);
-            if (data === "<?=$ip;?>") $("#ip-warning").show();
+            if (data === "<?=$client;?>") $("#ip-warning").show();
         },
         error: function(xhr, stat, err) {
             $("#ip").replaceWith("unknown");

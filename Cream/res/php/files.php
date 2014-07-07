@@ -18,7 +18,7 @@ function mime($path) {
     // can't get MIME type from unreadable (no permission) or pseudo (e.g. /dev) files
     $mime = finfo_file($finfo, $path);
     error_reporting($errep);
-    // default to plain text type if empty
+    // default to unknown type if empty
     return $mime ? $mime : (is_dir($path) ? "directory" : "unknown");
 }
 // return file content by GET
@@ -32,8 +32,9 @@ if (isset($_GET["key"])) {
     print(file_get_contents($file));
     return;
 }
+// check current directory exists
+if (!array_key_exists("dir", $_POST)) return http_response_code(400);
 $dir = $_POST["dir"];
-// specified directory doesn't exist
 if (!file_exists($dir) || $dir[0] !== "/") return http_response_code(400);
 // convert to absolute
 $dir = realpath($dir);

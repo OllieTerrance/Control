@@ -46,31 +46,31 @@ if ($access) {
                         </li>
 <?
 }
-$desc = '<i class="fa fa-globe"></i> Your IP: ' . $ip;
+$desc = '<i class="fa fa-globe"></i> Your IP: ' . $client;
 if ($local) {
     $host = '<i class="fa fa-question"></i> Unknown device';
     $ico = "";
     // known device, show name/icon
-    if (array_key_exists($ip, $devices)) {
-        if (count($devices[$ip]) === 1) {
-            $host = $devices[$ip][0][0];
-            if (array_key_exists(1, $devices[$ip][0])) $ico = '<img src="res/ico/' . $devices[$ip][0][1] . '.png"/> ';
+    if (array_key_exists($client, $config["devices"])) {
+        if (count($config["devices"][$client]) === 1) {
+            $host = $config["devices"][$client][0][0];
+            if (array_key_exists(1, $config["devices"][$client][0])) $ico = '<img src="res/ico/' . $config["devices"][$client][0][1] . '.png"/> ';
         } else {
             $hosts = array();
-            foreach ($devices[$ip] as $xdev) {
-                array_push($hosts, $xdev[0]);
-                if (array_key_exists(1, $xdev)) $ico .= '<img src="res/ico/' . $xdev[1] . '.png"/>';
+            foreach ($config["devices"][$client] as $dev) {
+                array_push($hosts, $dev[0]);
+                if (array_key_exists(1, $dev)) $ico .= '<img src="res/ico/' . $dev[1] . '.png"/>';
             }
             $ico .= " ";
             $host = implode("/", $hosts);
         }
     }
-    $desc = $ico . $host . " (" . $ip . ")";
+    $desc = $ico . $host . " (" . $client . ")";
 } elseif ($remote) {
-    $desc = '<i class="fa fa-globe"></i> External access (' . $ip . ')';
+    $desc = '<i class="fa fa-globe"></i> External access (' . $client . ')';
 }
 ?>
-                        <li><a href="http://<?=$ip?>/"><?=$desc;?></a></li>
+                        <li><a href="http://<?=$client?>/"><?=$desc;?></a></li>
 <?
 if ($remote) {
 ?>
@@ -98,36 +98,36 @@ if ($access) {
                     <h2>Devices</h2>
                     <table id="devices" class="table table-bordered table-striped">
 <?
-    foreach ($devices as $xip => $xdevs) {
+    foreach ($config["devices"] as $ip => $devs) {
         // highlight green if current device, blue if first device (i.e. server)
-        $class = ($xip === $ip) ? ' class="success"' : (($xip === $server) ? ' class="info"' : "");
-        $devs = array();
+        $class = ($ip === $client) ? ' class="success"' : (($ip === $server) ? ' class="info"' : "");
+        $fdevs = array();
         // iterate device list for current IP
-        foreach ($xdevs as $xdev) {
-            $ico = array_key_exists(1, $xdev) ? '<img src="res/ico/' . $xdev[1] . '.png"/> ' : "";
-            array_push($devs, $ico . $xdev[0]);
+        foreach ($devs as $dev) {
+            $ico = array_key_exists(1, $dev) ? '<img src="res/ico/' . $dev[1] . '.png"/> ' : "";
+            array_push($fdevs, $ico . $dev[0]);
         }
 ?>
                         <tr<?=$class;?>>
-                            <td><?=implode("<br/>", $devs);?></td>
-                            <td><code><?=$xip;?></code></td>
+                            <td><?=implode("<br/>", $fdevs);?></td>
+                            <td><code><?=$ip;?></code></td>
                         </tr>
 <?
     }
 ?>
                     </table>
 <?
-    if (!empty($media)) {
+    if (!empty($config["media"])) {
 ?>
                     <h2>Media</h2>
                     <table class="table table-bordered table-striped">
 <?
-        foreach ($media as $xdevs) {
-            $ico = array_key_exists(2, $xdevs) ? '<img src="res/ico/' . $xdevs[2] . '.png"/> ' : "";
+        foreach ($config["media"] as $devs) {
+            $ico = array_key_exists(2, $devs) ? '<img src="res/ico/' . $devs[2] . '.png"/> ' : "";
 ?>
                         <tr>
-                            <td><?=$ico;?><?=$xdevs[0];?></td>
-                            <td><?=$xdevs[1];?></td>
+                            <td><?=$ico;?><?=$devs[0];?></td>
+                            <td><?=$devs[1];?></td>
                         </tr>
 <?
         }
@@ -160,7 +160,7 @@ if ($access) {
                         <span class="hidden-xs">Up one level</span>
                     </button>
 <?
-if (!empty($places)) {
+if (!empty($config["places"])) {
 ?>
                     <button type="button" class="location-ctrl btn btn-default dropdown-toggle" data-toggle="dropdown">
                         <i class="fa fa-rocket"></i>
@@ -169,7 +169,7 @@ if (!empty($places)) {
                     </button>
                     <ul id="location-common" class="dropdown-menu pull-right" role="menu">
 <?
-    foreach ($places as $place => $icon) {
+    foreach ($config["places"] as $place => $icon) {
 ?>
                         <li><a href data-path="<?=$place;?>"><i class="fa fa-fw fa-<?=$icon;?>"></i> <code><?=$place;?></code></a></li>
 <?
@@ -218,8 +218,14 @@ if (!empty($places)) {
                     <p>Alternatively, you can <a href data-target="#login" data-toggle="modal">login</a> to the server with a password.</p>
                     <h2>Expecting a website here?</h2>
                     <p>You have reached this page by navigating to <code><?=$_SERVER["HTTP_HOST"];?></code>.  This happens when attempting to access a domain name that points to this server's external IP address (currently <code id="ip">...</code>), but does not have an appropriate virtual host configured locally.</p>
+<?
+    if (array_key_exists("messages", $config)) {
+?>
                     <h2>Contact the webmaster?</h2>
                     <p id="contact-para">For any questions or comments, <a href data-target="#contact" data-toggle="modal">click here</a> to leave a message.</p>
+<?
+    }
+?>
                 </div>
             </div>
 <?
@@ -298,6 +304,9 @@ if ($access) {
                 </div>
             </div>
         </div>
+<?
+    if (array_key_exists("messages", $config)) {
+?>
         <div id="contact" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -325,6 +334,7 @@ if ($access) {
             </div>
         </div>
 <?
+    }
 }
 ?>
         <script src="lib/js/jquery.min.js"></script>
