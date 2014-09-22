@@ -1,5 +1,5 @@
 <?
-require_once "../php/includes/common.php";
+require_once "../php/common.php";
 header("Content-Type: application/javascript");
 ?>$(document).ready(function() {
     // add a progress bar to the top of an element
@@ -49,7 +49,7 @@ if ($access) {
     var servicesProgress = progressBar("#services");
     $("#services").append(servicesProgress);
     ajaxWrap("Services", {
-        url: "res/php/services.php",
+        url: "res/ajax/services.php",
         success: function(data, stat, xhr) {
             var table = $("<table/>").addClass("table table-bordered table-condensed");
             // lines of " [ x ]  y" where x is +/-, y is name
@@ -85,7 +85,7 @@ if ($access) {
         if (device === "<?=$client;?>" || device === "<?=$server;?>") return;
         // ping the device to see if it is connected
         ajaxWrap("Ping: " + device, {
-            url: "res/php/ping.php",
+            url: "res/ajax/ping.php",
             method: "post",
             data: {"device": device},
             success: function(data, stat, xhr) {
@@ -102,7 +102,7 @@ if ($access) {
     var processesProgress = progressBar("#services");
     $("#processes").append(processesProgress);
     ajaxWrap("Processes", {
-        url: "res/php/ps.php",
+        url: "res/ajax/ps.php",
         success: function(data, stat, xhr) {
             var table = $("<table/>").addClass("table table-bordered table-condensed");
             table.append($("<thead/>").append($("<tr/>").append($.map(["ID", "User", "Name", "Description"], function(label) {
@@ -144,7 +144,7 @@ if ($access) {
         e.preventDefault();
         $("#logout").text("Loading...").parent().addClass("active");
         $.ajax({
-            url: "res/php/login.php?logout",
+            url: "res/ajax/login.php?logout",
             success: function(data, stat, xhr) {
                 location.reload();
             },
@@ -188,11 +188,11 @@ if ($access) {
         loading = true;
         $(".location-ctrl").prop("disabled", true);
         $("#files-list").css("opacity", 0.6);
-        // default to /
+        // default to first shortcut place
         var addr = $("#location-dir").val();
-        if (!addr) addr = "/";
+        if (!addr) addr = "<?=key($config["places"])?>";
         ajaxWrap("Files: list " + addr, {
-            url: "res/php/files.php",
+            url: "res/ajax/files.php",
             method: "post",
             // location normalisation handled by files.php
             data: {"dir": addr},
@@ -273,7 +273,7 @@ if ($access) {
                             $("#files-display-content").empty().append(progressBar());
                             $("#files-display").modal("show");
                             ajaxWrap("Files: preview " + file[0], {
-                                url: "res/php/files.php",
+                                url: "res/ajax/files.php",
                                 method: "post",
                                 data: {
                                     "dir": path,
@@ -288,14 +288,14 @@ if ($access) {
                                             root = $("<pre/>").text(data);
                                             break;
                                         case "image":
-                                            root = $("<img/>").attr("src", "res/php/files.php?key=" + data);
+                                            root = $("<img/>").attr("src", "res/ajax/files.php?key=" + data);
                                             break;
                                         case "audio":
-                                            var source = $("<source/>").attr("src", "res/php/files.php?key=" + data).attr("type", file[2]);
+                                            var source = $("<source/>").attr("src", "res/ajax/files.php?key=" + data).attr("type", file[2]);
                                             root = $("<audio/>").attr("controls", "").append(source);
                                             break;
                                         case "video":
-                                            var source = $("<source/>").attr("src", "res/php/files.php?key=" + data).attr("type", file[2]);
+                                            var source = $("<source/>").attr("src", "res/ajax/files.php?key=" + data).attr("type", file[2]);
                                             root = $("<video/>").attr("controls", "").append(source);
                                             break;
                                     }
@@ -381,7 +381,7 @@ if ($access) {
         $("#files-newfolder-name").prop("disabled", true).parent().removeClass("has-error");
         $("#files-newfolder-submit").prop("disabled", true);
         ajaxWrap("Files: fetch " + path, {
-            url: "res/php/files.php",
+            url: "res/ajax/files.php",
             method: "post",
             data: {
                 "dir": path,
@@ -426,7 +426,7 @@ if ($access) {
             var reader = new FileReader();
             reader.onload = function(e) {
                 ajaxWrap("Files: upload " + file.name, {
-                    url: "res/php/files.php",
+                    url: "res/ajax/files.php",
                     method: "post",
                     data: {
                         "dir": path,
@@ -496,7 +496,7 @@ if ($access) {
 } else {
 ?>
     $.ajax({
-        url: "res/php/ip.php",
+        url: "res/ajax/ip.php",
         success: function(data, stat, xhr) {
             $("#ip").text(data);
             if (data === "<?=$client;?>") $("#ip-warning").show();
@@ -514,7 +514,7 @@ if ($access) {
         $("#login-password").prop("disabled", true).parent().removeClass("has-error");
         $("#login-submit").prop("disabled", true);
         $.ajax({
-            url: "res/php/login.php",
+            url: "res/ajax/login.php",
             method: "post",
             data: {"password": $("#login-password").val()},
             success: function(data, stat, xhr) {
@@ -553,7 +553,7 @@ if ($access) {
     $("#contact-submit").on("click", function(e) {
         $("#contact-name, #contact-email, #contact-comments, #contact-submit").prop("disabled", true).parent().removeClass("has-error");
         $.ajax({
-            url: "res/php/contact.php",
+            url: "res/ajax/contact.php",
             method: "post",
             data: {
                 "name": $("#contact-name").val(),

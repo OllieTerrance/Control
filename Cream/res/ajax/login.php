@@ -1,7 +1,7 @@
 <?
 // handle remote logins
-require_once "includes/common.php";
-require_once "/var/res/php/keystore.php";
+require_once "../php/common.php";
+require_once getenv("PHPLIB") . "keystore.php";
 session_start();
 // clear session and logout
 if (array_key_exists("logout", $_GET)) {

@@ -1,5 +1,5 @@
 <?
-require_once "res/php/includes/common.php";
+require_once "res/php/common.php";
 ?><!DOCTYPE html>
 <html lang="en">
     <head>
@@ -160,7 +160,9 @@ if ($access) {
                         <span class="hidden-xs">Up one level</span>
                     </button>
 <?
+$startDir = "/";
 if (!empty($config["places"])) {
+    $startDir = key($config["places"]);
 ?>
                     <button type="button" class="location-ctrl btn btn-default dropdown-toggle" data-toggle="dropdown">
                         <i class="fa fa-rocket"></i>
@@ -188,7 +190,7 @@ if (!empty($config["places"])) {
                                 <button id="location-back" type="button" class="location-ctrl btn btn-default" title="Back"><i class="fa fa-arrow-left"></i></button>
                                 <button id="location-forward" type="button" class="location-ctrl btn btn-default" title="Forward"><i class="fa fa-arrow-right"></i></button>
                             </div>
-                            <input id="location-dir" class="location-ctrl form-control" value="/" placeholder="/">
+                            <input id="location-dir" class="location-ctrl form-control" value="<?=$startDir?>" placeholder="/">
                             <div class="input-group-btn">
                                 <button id="location-submit" type="submit" class="location-ctrl btn btn-primary">
                                     <i class="fa fa-arrow-circle-right"></i>

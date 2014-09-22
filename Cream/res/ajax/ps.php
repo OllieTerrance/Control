@@ -1,6 +1,6 @@
 <?
 // list all running processes
-require_once "includes/auth.php";
+require_once "../php/auth.php";
 exec("ps -A o pid,user,comm,command", $out);
 $columns = array_shift($out);
 foreach ($out as $line) {

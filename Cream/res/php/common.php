@@ -8,7 +8,7 @@ require_once "config.php";
 $server = $_SERVER["SERVER_ADDR"];
 $client = $_SERVER["REMOTE_ADDR"];
 // local if accessing by internal hostname or IP
-$local = array_key_exists("HTTP_HOST", $_SERVER) && in_array($_SERVER["HTTP_HOST"], array("cream", $server));
+$local = array_key_exists("HTTP_HOST", $_SERVER) && in_array($_SERVER["HTTP_HOST"], $config["hostnames"]);
 // remote if logged in with password
 $remote = array_key_exists("login", $_SESSION);
 $access = $local || $remote;
