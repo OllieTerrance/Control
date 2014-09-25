@@ -533,47 +533,50 @@ if ($access) {
     $("#files-upload-file").change(function(e) {
         uploadFiles($("#files-upload-file").prop("files"));
     });
+    var tabs = $.makeArray($(".nav-tab").map(function(i, tab) {
+        return tab.id.substr(4);
+    }));
+    var infoTabs = $.makeArray($("#page-info .nav a").map(function(i, tab) {
+        return tab.id.substr(9);
+    }));
     $(".nav-tab").click(function(e) {
         $(".nav-tab").parent().removeClass("active");
         $(".page").hide();
         $(this).parent().addClass("active");
         $("#page-" + this.id.substr(4)).show();
     });
-    var tabs = $.makeArray($(".nav-tab").map(function(i, tab) {
-        return tab.id.substr(4);
-    }));
-    $("#page-info .nav a").click(function(e) {
-        location.hash = "#info/" + this.id.substr(9);
+    $("#nav-info").click(function(e) {
+        e.preventDefault();
+        skipHash = true;
+        location.hash = $("#page-info .nav li.active a").attr("href");
     });
-    var infoTabs = $.makeArray($("#page-info .nav a").map(function(i, tab) {
-        return tab.id.substr(9);
-    }));
-    window.i = infoTabs;
+    $("#page-info .nav li a").click(function(e) {
+        skipHash = true;
+        location.hash = $(this).attr("href");
+    });
+    var skipHash = false;
     var hashChange = function() {
+        if (skipHash) {
+            skipHash = false;
+            return;
+        }
         var tab;
         if (location.hash) {
             var sel = location.hash.substr(1).split("/");
             if (tabs.indexOf(sel[0]) > -1) tab = sel[0];
+            if (tab === "files" && !loading) $("#location-submit").click();
             if (tab === "info") {
-                var infoTab;
+                var infoTab = $("#page-info .nav li.active a").attr("id").substr(9);
                 if (infoTabs.indexOf(sel[1]) > -1) infoTab = sel[1];
-                if (!infoTab) {
-                    infoTab = infoTabs[0];
-                    location.hash = "#info/" + infoTab;
-                    // changing hash will recurse anyway
-                    return;
-                }
-                $("#info-nav-" + infoTab).click();
+                else if (!$("#info-nav-" + infoTab).hasClass("active")) $("#info-nav-" + infoTab).click();
             }
         }
         if (!tab) {
             tab = tabs[0];
+            skipHash = true;
             location.hash = "#" + tab;
-            // changing hash will recurse anyway
-            return;
         }
-        $("#nav-" + tab).click();
-        if (tab === "files" && !loading) $("#location-submit").click();
+        if (!$("#nav-" + tab).hasClass("active")) $("#nav-" + tab).click();
     };
     $(window).on("hashchange", hashChange);
     hashChange();

@@ -203,11 +203,11 @@ if (!empty($config["places"])) {
             </div>
             <div id="page-info" class="page">
                 <ul class="nav nav-pills nav-justified" role="tablist">
-                    <li><a id="info-nav-processes" href="#info/processes" data-toggle="tab" data-target="#processes"><i class="fa fa-bar-chart"></i> Processes</a></a></li>
+                    <li class="active"><a id="info-nav-processes" href="#info/processes" data-toggle="tab" data-target="#processes"><i class="fa fa-bar-chart"></i> Processes</a></a></li>
                     <li><a id="info-nav-services" href="#info/services" data-toggle="tab" data-target="#services"><i class="fa fa-check"></i> Services</a></a></li>
                 </ul>
                 <div class="tab-content">
-                    <div class="tab-pane" id="processes"></div>
+                    <div class="tab-pane active" id="processes"></div>
                     <div class="tab-pane" id="services"></div>
                 </div>
             </div>
