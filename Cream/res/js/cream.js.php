@@ -45,39 +45,6 @@ if ($access) {
         // make the request
         $.ajax(params);
     }
-    // check service status
-    var servicesProgress = progressBar("#services");
-    $("#services").append(servicesProgress);
-    ajaxWrap("Services", {
-        url: "res/ajax/services.php",
-        success: function(data, stat, xhr) {
-            var table = $("<table/>").addClass("table table-bordered table-condensed");
-            // lines of " [ x ]  y" where x is +/-, y is name
-            var raw = data.split("\n");
-            for (var i in raw) {
-                if (!raw[i]) continue;
-                var tr = $("<tr/>");
-                var colour = "";
-                switch (raw[i].charAt(3)) {
-                    // running
-                    case "+":
-                        colour = "success";
-                        break;
-                    // not running
-                    case "-":
-                        colour = "danger";
-                        break;
-                }
-                tr.addClass(colour);
-                tr.append($("<td/>").addClass(colour ? "text-" + colour : "").text(raw[i].substr(8)));
-                table.append(tr);
-            }
-            servicesProgress.replaceWith(table);
-        },
-        error: function(xhr, stat, err) {
-            servicesProgress.replaceWith(alertBar("danger", "Unable to query status of services."));
-        }
-    });
     // check device status
     $("#devices code").each(function(i, code) {
         var device = $(code).text();
@@ -139,6 +106,62 @@ if ($access) {
             processesProgress.replaceWith(alertBar("danger", "Unable to query a list of processes."));
         }
     });
+<?
+    if (array_key_exists("services", $config) && in_array($config["services"], array("debian", "arch"))) {
+?>
+    // check service status
+    var servicesProgress = progressBar("#services");
+    $("#services").append(servicesProgress);
+    ajaxWrap("Services", {
+        url: "res/ajax/services.php",
+        success: function(data, stat, xhr) {
+            var table = $("<table/>").addClass("table table-bordered table-condensed");
+<?
+        switch ($config["services"]) {
+            case "debian":
+?>
+            // lines of " [ x ]  y" where x is +/-, y is name
+            var raw = data.split("\n");
+            for (var i in raw) {
+                if (!raw[i]) continue;
+                var tr = $("<tr/>");
+                // "+" if running, "-" if not, "?" if unknown
+                var ind = raw[i].charAt(3);
+                var colour = (ind === "+" ? "success" : (ind === "-" ? "warning" : ""));
+                if (colour) tr.addClass(colour);
+                tr.append($("<td/>").addClass(colour ? "text-" + colour : "").text(raw[i].substr(8)));
+                table.append(tr);
+            }
+<?
+                break;
+            case "arch":
+?>
+            // lines of "* x   y   z" where * indicates down, x is name, y is load, z is active
+            var raw = data.split("\n");
+            raw.shift();
+            for (var i in raw) {
+                var parts = raw[i].substr(2).split(/\s+/, 4);
+                var tr = $("<tr/>");
+                var colour = "success";
+                if (parts[1] !== "loaded") colour = "danger";
+                else if (parts[2] === "inactive") colour = "warning";
+                tr.addClass(colour);
+                tr.append($("<td/>").addClass(colour ? "text-" + colour : "").text(parts[0]));
+                table.append(tr);
+            }
+<?
+                break;
+        }
+?>
+            servicesProgress.replaceWith(table);
+        },
+        error: function(xhr, stat, err) {
+            servicesProgress.replaceWith(alertBar("danger", "Unable to query status of services."));
+        }
+    });
+<?
+    }
+?>
     // async logout button
     $("#logout").click(function(e) {
         e.preventDefault();
@@ -476,16 +499,35 @@ if ($access) {
     var tabs = $.makeArray($(".nav-tab").map(function(i, tab) {
         return tab.id.substr(4);
     }));
-    window.t = tabs;
+    $("#page-info .nav a").click(function(e) {
+        location.hash = "#info/" + this.id.substr(9);
+    });
+    var infoTabs = $.makeArray($("#page-info .nav a").map(function(i, tab) {
+        return tab.id.substr(9);
+    }));
+    window.i = infoTabs;
     var hashChange = function() {
         var tab;
         if (location.hash) {
-            var sel = location.hash.substr(1);
-            if (tabs.indexOf(sel) > -1) tab = sel;
+            var sel = location.hash.substr(1).split("/");
+            if (tabs.indexOf(sel[0]) > -1) tab = sel[0];
+            if (tab === "info") {
+                var infoTab;
+                if (infoTabs.indexOf(sel[1]) > -1) infoTab = sel[1];
+                if (!infoTab) {
+                    infoTab = infoTabs[0];
+                    location.hash = "#info/" + infoTab;
+                    // changing hash will recurse anyway
+                    return;
+                }
+                $("#info-nav-" + infoTab).click();
+            }
         }
         if (!tab) {
             tab = tabs[0];
-            location.hash = "#home";
+            location.hash = "#" + tab;
+            // changing hash will recurse anyway
+            return;
         }
         $("#nav-" + tab).click();
         if (tab === "files" && !loading) $("#location-submit").click();

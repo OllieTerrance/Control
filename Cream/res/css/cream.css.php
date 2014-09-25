@@ -93,6 +93,17 @@ if ($access) {
 #page-info ul.nav {
     margin: 20px 0;
 }
+ul.nav-pills li a:hover {
+    background-color: #f8f8f8 !important;
+    color: #333 !important;
+}
+ul.nav-pills li.active a {
+    background-color: #e7e7e7 !important;
+    color: #555 !important;
+}
+ul.nav-pills li.active a:hover {
+    color: #333 !important;
+}
 #processes td:not(:last-child) {
     width: 0%;
     white-space: nowrap;

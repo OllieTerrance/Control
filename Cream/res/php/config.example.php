@@ -25,6 +25,8 @@ $config = array(
         "/var/www" => "globe",
         "/media/hdd" => "hdd-o"
     ),
+    // services: service platform to query - supports "debian" (service) or "arch" (systemctl)
+    "services" => "debian",
     // messages: path of server-writable file to store received messages
     "messages" => "/var/data/cream_messages.txt"
 );
