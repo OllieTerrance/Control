@@ -1,5 +1,6 @@
 <?
 require_once "res/php/common.php";
+$title = (array_key_exists("title", $config) ? $config["title"] : "Cream");
 ?><!DOCTYPE html>
 <html lang="en">
     <head>
@@ -7,7 +8,7 @@ require_once "res/php/common.php";
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
         <meta name="mobile-web-app-capable" content="yes">
-        <title>www@cream</title>
+        <title><?=$title?></title>
         <link rel="icon" sizes="16x16" href="res/img/cream-16.png">
         <link rel="icon" sizes="196x196" href="res/img/cream-196.png">
         <link rel="icon" sizes="128x128" href="res/img/cream-128.png">
@@ -25,7 +26,7 @@ require_once "res/php/common.php";
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href>www@cream</a>
+                    <a class="navbar-brand" href><?=$title?></a>
                 </div>
                 <div id="nav-collapse" class="collapse navbar-collapse">
 <?
@@ -221,10 +222,16 @@ if (!empty($config["places"])) {
                 <div class="col-lg-7 col-lg-offset-1 col-sm-8 col-sm-offset-1">
                     <h2>External access?</h2>
                     <p>You are currently viewing this page externally.  In order to view more details, you need to be viewing this page from a device on the network.</p>
-                    <div id="ip-warning" class="alert alert-info">Your external IP address seems to match that of the server, so you are likely already connected successfully.  Go ahead and try accessing <a class="alert-link" href="http://cream/">by hostname</a> or <a class="alert-link" href="http://<?=$server;?>/">internal IP address</a> to continue.</div>
+                    <div id="ip-warning" class="alert alert-info">Your external IP address seems to match that of the server, so you are likely already connected successfully.  Go ahead and try accessing <a class="alert-link" href="http://<?=$config["hostnames"][0]?>/">by internal hostname</a> to continue.</div>
+<?
+    if (array_key_exists("password", $config)) {
+?>
                     <p>Alternatively, you can <a href data-target="#login" data-toggle="modal">login</a> to the server with a password.</p>
+<?
+    }
+?>
                     <h2>Expecting a website here?</h2>
-                    <p>You have reached this page by navigating to <code><?=$_SERVER["HTTP_HOST"];?></code>.  This happens when attempting to access a domain name that points to this server's external IP address (currently <code id="ip">...</code>), but does not have an appropriate virtual host configured locally.</p>
+                    <p>You have reached this page by navigating to <code><?=$_SERVER["HTTP_HOST"];?></code>.  This may happen when attempting to access a domain name that points to this server's external IP address (currently <code id="ip">...</code>), but does not have an appropriate virtual host configured locally.</p>
 <?
     if (array_key_exists("messages", $config)) {
 ?>
@@ -292,6 +299,7 @@ if ($access) {
         </div>
 <?
 } else {
+    if (array_key_exists("password", $config)) {
 ?>
         <div id="login" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog">
@@ -312,6 +320,7 @@ if ($access) {
             </div>
         </div>
 <?
+    }
     if (array_key_exists("messages", $config)) {
 ?>
         <div id="contact" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">

@@ -1,8 +1,12 @@
 <?
 // central configuration file - rename/copy to config.php to use
 $config = array(
+    // title: string displayed in the page title and nav corner (defaults to "Cream")
+    "title" => "Cream",
     // hostnames (required): list of hostnames to treat as local
     "hostnames" => array("localhost", "cream"),
+    // password: SHA256-encrypted password (leave undefined to disable remote login)
+    // "password" => "",
     // devices (required): list of all known devices, with static IPs, on the network (ico/ icons)
     "devices" => array(
         // ip address => array(array(label[, icon])[, ...])

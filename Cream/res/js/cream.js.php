@@ -254,9 +254,9 @@ if ($access) {
         loading = true;
         $(".location-ctrl").prop("disabled", true);
         $("#files-list").css("opacity", 0.6);
-        // default to first shortcut place
+        // default to root directory /
         var addr = $("#location-dir").val();
-        if (!addr) addr = "<?=key($config["places"])?>";
+        if (!addr) addr = "/";
         ajaxWrap("Files: list " + addr, {
             url: "res/ajax/files.php",
             method: "post",
@@ -551,6 +551,7 @@ if ($access) {
         location.hash = $("#page-info .nav li.active a").attr("href");
     });
     $("#page-info .nav li a").click(function(e) {
+        if ($(this).hasClass("active")) return;
         skipHash = true;
         location.hash = $(this).attr("href");
     });
@@ -568,7 +569,7 @@ if ($access) {
             if (tab === "info") {
                 var infoTab = $("#page-info .nav li.active a").attr("id").substr(9);
                 if (infoTabs.indexOf(sel[1]) > -1) infoTab = sel[1];
-                else if (!$("#info-nav-" + infoTab).hasClass("active")) $("#info-nav-" + infoTab).click();
+                if (!$("#info-nav-" + infoTab).hasClass("active")) $("#info-nav-" + infoTab).click();
             }
         }
         if (!tab) {
