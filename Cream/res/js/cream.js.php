@@ -488,7 +488,7 @@ if ($access) {
             location.hash = "#home";
         }
         $("#nav-" + tab).click();
-        if (tab === "files") $("#location-submit").click();
+        if (tab === "files" && !loading) $("#location-submit").click();
     };
     $(window).on("hashchange", hashChange);
     hashChange();

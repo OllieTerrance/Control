@@ -5,9 +5,12 @@ require_once "res/php/common.php";
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+        <meta name="mobile-web-app-capable" content="yes">
         <title>www@cream</title>
-        <link rel="shortcut icon" href="res/ico/cream.png">
+        <link rel="icon" sizes="16x16" href="res/img/cream-16.png">
+        <link rel="icon" sizes="196x196" href="res/img/cream-196.png">
+        <link rel="icon" sizes="128x128" href="res/img/cream-128.png">
         <link href="lib/css/bootstrap.min.css" rel="stylesheet">
         <link href="lib/css/font-awesome.min.css" rel="stylesheet">
         <link href="res/css/cream.css.php" rel="stylesheet">
@@ -87,14 +90,10 @@ if ($remote) {
 if ($access) {
 ?>
             <div id="page-home" class="page row">
-                <div class="col-lg-4 col-sm-3">
+                <div class="col-sm-3">
                     <img id="logo" class="img-responsive" src="res/img/cream.png"/>
                 </div>
-                <div class="col-lg-2 col-lg-offset-3 col-md-3 col-md-offset-2 col-sm-4">
-                    <h2>Services</h2>
-                    <div id="services"></div>
-                </div>
-                <div class="col-lg-3 col-md-4 col-sm-5">
+                <div class="col-lg-3 col-lg-offset-6 col-md-4 col-md-offset-5 col-sm-5 col-sm-offset-4">
                     <h2>Devices</h2>
                     <table id="devices" class="table table-bordered table-striped">
 <?
@@ -203,8 +202,14 @@ if (!empty($config["places"])) {
                 <div id="files-list" class="row"></div>
             </div>
             <div id="page-info" class="page">
-                <h2>Processes</h2>
-                <div id="processes"></div>
+                <ul class="nav nav-pills nav-justified" role="tablist">
+                    <li class="active"><a href="#processes" role="tab" data-toggle="tab"><i class="fa fa-bar-chart"></i> Processes</a></a></li>
+                    <li><a href="#services" role="tab" data-toggle="tab"><i class="fa fa-check"></i> Services</a></a></li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="processes"></div>
+                    <div class="tab-pane" id="services"></div>
+                </div>
             </div>
 <?
 } else {

@@ -90,6 +90,9 @@ if ($access) {
     display: none;
     margin-top: 10px;
 }
+#page-info ul.nav {
+    margin: 20px 0;
+}
 #processes td:not(:last-child) {
     width: 0%;
     white-space: nowrap;
