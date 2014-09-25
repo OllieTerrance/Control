@@ -43,28 +43,71 @@ if ($access) {
             }
         });
         // make the request
-        $.ajax(params);
+        return $.ajax(params);
     }
     // check device status
+    var devices = [];
     $("#devices code").each(function(i, code) {
         var device = $(code).text();
         // current and server devices already highlighted 
         if (device === "<?=$client;?>" || device === "<?=$server;?>") return;
-        // ping the device to see if it is connected
-        ajaxWrap("Ping: " + device, {
+        devices.push([device, code]);
+    });
+<?
+    $pingSeq = true;
+    $pingTime = false;
+    if (array_key_exists("ping", $config)) {
+        if (array_key_exists("sequential", $config["ping"])) $pingSeq = $config["ping"]["sequential"];
+        if (array_key_exists("timeout", $config["ping"])) $pingTime = $local ? $config["ping"]["timeout"][0] : $config["ping"]["timeout"][1];
+    }
+?>
+    // ping the next device in the list
+    function devicePing() {
+        var pair = devices.shift();
+        // no more devices
+        if (!pair) return;
+        var abort = false;
+        var timeout;
+        var req = ajaxWrap("Ping: " + pair[0], {
             url: "res/ajax/ping.php",
             method: "post",
-            data: {"device": device},
+            data: {"device": pair[0]},
             success: function(data, stat, xhr) {
                 // ping successful
-                $(code).closest("tr").addClass("info");
+                $(pair[1]).closest("tr").addClass("info");
+                if (timeout) clearTimeout(timeout);
+                devicePing();
             },
             error: function(xhr, stat, err) {
                 // ping timed out (408)
-                $(code).closest("tr").addClass("danger");
+                $(pair[1]).closest("tr").addClass("danger");
+                if (!abort) devicePing();
             }
         });
-    });
+<?
+    if ($pingTime) {
+?>
+        // give up after unlikely to hear back
+        timeout = setTimeout(function() {
+            abort = true;
+            req.abort();
+            devicePing();
+        }, <?=$pingTime?>);
+<?
+    }
+?>
+    }
+<?
+    if ($pingSeq) {
+?>
+    devicePing();
+<?
+    } else {
+?>
+    for (var i = devices.length; i > 0; i--) devicePing();
+<?
+    }
+?>
     // list running processes
     var processesProgress = progressBar("#services");
     $("#processes").append(processesProgress);

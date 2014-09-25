@@ -11,6 +11,13 @@ $config = array(
         "192.168.1.102" => array(array("Desktop", "desktop")),
         "192.168.1.254" => array(array("Router", "router"))
     ),
+    "ping" => array(
+        // ping sequential: wait for each ping to complete before making another request
+        // if false, will slow down other AJAX requests (best to avoid using timeout with sequential off)
+        "sequential" => true,
+        // ping timeout: time for JavaScript to wait for a ping request (when accessing local, remote)
+        "timeout" => array(3000, 5000)
+    ),
     // media: other resources, e.g. flash drives, external hard disks (ico/ icons)
     "media" => array(
         // array(label, description[, icon])
