@@ -1,6 +1,6 @@
 <?
 require_once "res/php/common.php";
-$title = (array_key_exists("title", $config) ? $config["title"] : "Cream");
+$title = (array_key_exists("title", $config) ? $config["title"] : "Control");
 ?><!DOCTYPE html>
 <html lang="en">
     <head>
@@ -14,7 +14,7 @@ $title = (array_key_exists("title", $config) ? $config["title"] : "Cream");
         <link rel="icon" sizes="128x128" href="res/img/cream-128.png">
         <link href="lib/css/bootstrap.min.css" rel="stylesheet">
         <link href="lib/css/font-awesome.min.css" rel="stylesheet">
-        <link href="res/css/cream.css.php" rel="stylesheet">
+        <link href="res/css/control.css.php" rel="stylesheet">
     </head>
     <body>
         <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -355,6 +355,6 @@ if ($access) {
 ?>
         <script src="lib/js/jquery.min.js"></script>
         <script src="lib/js/bootstrap.min.js"></script>
-        <script src="res/js/cream.js.php"></script>
+        <script src="res/js/control.js.php"></script>
     </body>
 </html>

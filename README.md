@@ -1,7 +1,7 @@
 Introduction
 ============
 
-Cream (as in the Sonic the Hedgehog character) is a custom status page used on my Raspberry Pi web server.  It allows viewing the status of running services, connected devices, files and more.
+Control is a custom status page used on my Raspberry Pi web server.  It allows viewing the status of running services, connected devices, files and more.
 
 
 Running from source

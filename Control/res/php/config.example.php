@@ -1,16 +1,16 @@
 <?
 // central configuration file - rename/copy to config.php to use
 $config = array(
-    // title: string displayed in the page title and nav corner (defaults to "Cream")
-    "title" => "Cream",
+    // title: string displayed in the page title and nav corner (defaults to "Control")
+    "title" => "Control",
     // hostnames (required): list of hostnames to treat as local
-    "hostnames" => array("localhost", "cream"),
+    "hostnames" => array("localhost"),
     // password: SHA256-encrypted password (leave undefined to disable remote login)
     // "password" => "",
     // devices (required): list of all known devices, with static IPs, on the network (ico/ icons)
     "devices" => array(
         // ip address => array(array(label[, icon])[, ...])
-        "192.168.1.100" => array(array("Cream", "cream")),
+        "192.168.1.100" => array(array("Host", "host")),
         "192.168.1.101" => array(array("Laptop (Windows)", "windows"), array("Laptop (Ubuntu)", "linux")),
         "192.168.1.102" => array(array("Desktop", "desktop")),
         "192.168.1.254" => array(array("Router", "router"))
@@ -39,5 +39,5 @@ $config = array(
     // services: service platform to query - supports "debian" (service) or "arch" (systemctl)
     "services" => "debian",
     // messages: path of server-writable file to store received messages
-    "messages" => "/var/data/cream_messages.txt"
+    "messages" => "/var/data/control_messages.txt"
 );
