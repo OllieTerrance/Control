@@ -56,18 +56,8 @@ if ($local) {
     $ico = "";
     // known device, show name/icon
     if (array_key_exists($client, $config["devices"])) {
-        if (count($config["devices"][$client]) === 1) {
-            $host = $config["devices"][$client][0][0];
-            if (array_key_exists(1, $config["devices"][$client][0])) $ico = '<i class="fa fa-' . $config["devices"][$client][0][1] . '"></i> ';
-        } else {
-            $hosts = array();
-            foreach ($config["devices"][$client] as $dev) {
-                array_push($hosts, $dev[0]);
-                if (array_key_exists(1, $dev)) $ico .= '<i class="fa fa-' . $dev[1] . '"></i>';
-            }
-            $ico .= " ";
-            $host = implode("/", $hosts);
-        }
+        $host = $config["devices"][$client][0];
+        if (array_key_exists(1, $config["devices"][$client])) $ico = '<i class="fa fa-' . $config["devices"][$client][1] . '"></i> ';
     }
     $desc = $ico . $host . " (" . $client . ")";
 } elseif ($remote) {
@@ -98,18 +88,13 @@ if ($access) {
                     <h2>Devices</h2>
                     <table id="devices" class="table table-bordered table-striped">
 <?
-    foreach ($config["devices"] as $ip => $devs) {
+    foreach ($config["devices"] as $ip => $dev) {
         // highlight green if current device, blue if first device (i.e. server)
         $class = ($ip === $client) ? ' class="success"' : (($ip === $server) ? ' class="info"' : "");
-        $fdevs = array();
-        // iterate device list for current IP
-        foreach ($devs as $dev) {
-            $ico = array_key_exists(1, $dev) ? '<i class="fa fa-fw fa-' . $dev[1] . '"></i> ' : "";
-            array_push($fdevs, $ico . $dev[0]);
-        }
+        $ico = array_key_exists(1, $dev) ? '<i class="fa fa-fw fa-' . $dev[1] . '"></i> ' : "";
 ?>
                         <tr<?=$class;?>>
-                            <td><?=implode("<br/>", $fdevs);?></td>
+                            <td><?=$ico;?><?=$dev[0];?></td>
                             <td><code><?=$ip;?></code></td>
                         </tr>
 <?

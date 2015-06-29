@@ -9,11 +9,11 @@ $config = array(
     // "password" => "",
     // devices (required): list of all known devices, with static IPs, on the network
     "devices" => array(
-        // ip address => array(array(label[, icon])[, ...])
-        "192.168.1.100" => array(array("Host", "host")),
-        "192.168.1.101" => array(array("Laptop (Windows)", "windows"), array("Laptop (Ubuntu)", "linux")),
-        "192.168.1.102" => array(array("Desktop", "desktop")),
-        "192.168.1.254" => array(array("Router", "router"))
+        // ip address => array(label[, icon])
+        "192.168.1.100" => array("Host", "server"),
+        "192.168.1.101" => array("Laptop", "laptop"),
+        "192.168.1.102" => array("Desktop", "desktop"),
+        "192.168.1.254" => array("Router", "wifi")
     ),
     "ping" => array(
         // ping sequential: wait for each ping to complete before making another request
@@ -25,8 +25,8 @@ $config = array(
     // media: other resources, e.g. flash drives, external hard disks
     "media" => array(
         // array(label, description[, icon])
-        array("Data", "310GB data drive @ Desktop", "data"),
-        array("Backup", "1.5TB external HDD", "backup")
+        array("Data", "310GB data drive @ Desktop", "hdd-o"),
+        array("Backup", "1.5TB external HDD", "database")
     ),
     // places: directory shortcut list for the file browser
     "places" => array(

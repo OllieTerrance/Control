@@ -21,6 +21,4 @@ Configuration file
 
 The `res/php/includes/config.php` file holds lists of devices and IP addresses, media devices, common places and more.  You can use the `config.example.php` file as a starting point.
 
-For devices and media, icons are PNGs, referenced by name (minus extension), and stored in `res/ico`.  Place icons come from Font Awesome, leaving off the `fa-` prefix.
-
-Devices is required, the rest are optional (not specifying will disable the relevant component).  Multiple device names can share an IP address (e.g. a dual-boot computer), and will be displayed together.
+Devices is required, the rest are optional (not specifying will disable the relevant component).
