@@ -7,7 +7,7 @@ $config = array(
     "hostnames" => array("localhost"),
     // password: SHA256-encrypted password (leave undefined to disable remote login)
     // "password" => "",
-    // devices (required): list of all known devices, with static IPs, on the network (ico/ icons)
+    // devices (required): list of all known devices, with static IPs, on the network
     "devices" => array(
         // ip address => array(array(label[, icon])[, ...])
         "192.168.1.100" => array(array("Host", "host")),
@@ -22,13 +22,13 @@ $config = array(
         // ping timeout: time for JavaScript to wait for a ping request (when accessing local, remote)
         "timeout" => array(3000, 5000)
     ),
-    // media: other resources, e.g. flash drives, external hard disks (ico/ icons)
+    // media: other resources, e.g. flash drives, external hard disks
     "media" => array(
         // array(label, description[, icon])
         array("Data", "310GB data drive @ Desktop", "data"),
         array("Backup", "1.5TB external HDD", "backup")
     ),
-    // places: directory shortcut list for the file browser (Font Awesome icons)
+    // places: directory shortcut list for the file browser
     "places" => array(
         // path => label
         "/" => "desktop",

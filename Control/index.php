@@ -58,12 +58,12 @@ if ($local) {
     if (array_key_exists($client, $config["devices"])) {
         if (count($config["devices"][$client]) === 1) {
             $host = $config["devices"][$client][0][0];
-            if (array_key_exists(1, $config["devices"][$client][0])) $ico = '<img src="res/ico/' . $config["devices"][$client][0][1] . '.png"/> ';
+            if (array_key_exists(1, $config["devices"][$client][0])) $ico = '<i class="fa fa-' . $config["devices"][$client][0][1] . '"></i> ';
         } else {
             $hosts = array();
             foreach ($config["devices"][$client] as $dev) {
                 array_push($hosts, $dev[0]);
-                if (array_key_exists(1, $dev)) $ico .= '<img src="res/ico/' . $dev[1] . '.png"/>';
+                if (array_key_exists(1, $dev)) $ico .= '<i class="fa fa-' . $dev[1] . '"></i>';
             }
             $ico .= " ";
             $host = implode("/", $hosts);
@@ -104,7 +104,7 @@ if ($access) {
         $fdevs = array();
         // iterate device list for current IP
         foreach ($devs as $dev) {
-            $ico = array_key_exists(1, $dev) ? '<img src="res/ico/' . $dev[1] . '.png"/> ' : "";
+            $ico = array_key_exists(1, $dev) ? '<i class="fa fa-fw fa-' . $dev[1] . '"></i> ' : "";
             array_push($fdevs, $ico . $dev[0]);
         }
 ?>
@@ -123,7 +123,7 @@ if ($access) {
                     <table class="table table-bordered table-striped">
 <?
         foreach ($config["media"] as $devs) {
-            $ico = array_key_exists(2, $devs) ? '<img src="res/ico/' . $devs[2] . '.png"/> ' : "";
+            $ico = array_key_exists(2, $devs) ? '<i class="fa fa-fw fa-' . $devs[2] . '"></i> ' : "";
 ?>
                         <tr>
                             <td><?=$ico;?><?=$devs[0];?></td>
