@@ -9,9 +9,9 @@ $title = (array_key_exists("title", $config) ? $config["title"] : "Control");
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
         <meta name="mobile-web-app-capable" content="yes">
         <title><?=$title?></title>
-        <link rel="icon" sizes="16x16" href="res/img/cream-16.png">
-        <link rel="icon" sizes="196x196" href="res/img/cream-196.png">
-        <link rel="icon" sizes="128x128" href="res/img/cream-128.png">
+        <link rel="icon" sizes="16x16" href="res/img/icon-16.png">
+        <link rel="icon" sizes="196x196" href="res/img/icon-196.png">
+        <link rel="icon" sizes="128x128" href="res/img/icon-128.png">
         <link href="lib/css/bootstrap.min.css" rel="stylesheet">
         <link href="lib/css/font-awesome.min.css" rel="stylesheet">
         <link href="res/css/control.css.php" rel="stylesheet">
@@ -92,7 +92,7 @@ if ($access) {
 ?>
             <div id="page-home" class="page row">
                 <div class="col-sm-3">
-                    <img id="logo" class="img-responsive" src="res/img/cream.png"/>
+                    <img id="logo" class="img-responsive" src="res/img/banner.png"/>
                 </div>
                 <div class="col-lg-3 col-lg-offset-6 col-md-4 col-md-offset-5 col-sm-5 col-sm-offset-4">
                     <h2>Devices</h2>
@@ -217,7 +217,7 @@ if (!empty($config["places"])) {
 ?>
             <div class="row">
                 <div class="col-lg-4 col-sm-3">
-                    <img id="logo" class="img-responsive" src="res/img/cream.png"/>
+                    <img id="logo" class="img-responsive" src="res/img/banner.png"/>
                 </div>
                 <div class="col-lg-7 col-lg-offset-1 col-sm-8 col-sm-offset-1">
                     <h2>External access?</h2>
