@@ -6,6 +6,8 @@ header("Content-Type: application/javascript");
     function alertBar(colour, content) {
         return $("<div/>").addClass("alert alert-" + colour).html(content);
     }
+    // test for touch events on mobile, borrowed from Modernizr
+    var isMobile = !!(("ontouchstart" in window) || window.DocumentTouch && document instanceof DocumentTouch);
 <?
 if ($access) {
 ?>
@@ -49,7 +51,7 @@ if ($access) {
     var devices = [];
     $("#devices code").each(function(i, code) {
         var device = $(code).text();
-        // current and server devices already highlighted 
+        // current and server devices already highlighted
         if (device === "<?=$client;?>" || device === "<?=$server;?>") return;
         devices.push([device, code]);
     });
@@ -314,6 +316,7 @@ if ($access) {
                             .append(perms).append($("<p/>").append(file[3])).append(date));
                     $("#files-list").append(root.append(panel));
                     // single-click to select
+                    var dblTimeout = null;
                     panel.click(function(e) {
                         if (e.ctrlKey) {
                             panel.toggleClass("panel-" + panel.data("colour")).toggleClass("panel-primary");
@@ -322,6 +325,16 @@ if ($access) {
                                 $(pnl).removeClass("panel-primary").addClass("panel-" + $(pnl).data("colour"));
                             });
                             panel.removeClass("panel-" + panel.data("colour")).addClass("panel-primary");
+                        }
+                        // if mobile with touch events, handle double-click manually
+                        if (isMobile) {
+                            if (dblTimeout) {
+                                panel.dblclick();
+                            } else {
+                                dblTimeout = setTimeout(function() {
+                                    dblTimeout = null;
+                                }, 250);
+                            }
                         }
                     });
                     // double-click folder to navigate to
