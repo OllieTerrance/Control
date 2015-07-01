@@ -52,6 +52,11 @@ if ($access) {
     white-space: nowrap;
     overflow: hidden;
 }
+#files-display-download {
+    float: right;
+    margin-top: -2px;
+    margin-right: 5px;
+}
 #files-display-content {
     padding-bottom: 15px;
 }
@@ -75,13 +80,13 @@ if ($access) {
     margin-bottom: 0;
     padding: 40px 0;
     text-align: center;
-    border: 5px dashed #dddddd;
+    border: 5px dashed #ddd;
 }
 #files-upload-drag {
     margin-bottom: 0;
     padding: 40px 0;
     text-align: center;
-    border: 5px dashed #dddddd;
+    border: 5px dashed #ddd;
 }
 #files-upload-drag p {
     margin: 0;

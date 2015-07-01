@@ -276,6 +276,7 @@ if ($access) {
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <button id="files-display-download" type="button" class="btn btn-default btn-xs">Download</button>
                         <h4 id="files-display-title" class="modal-title"></h4>
                     </div>
                     <div id="files-display-content" class="modal-body"></div>

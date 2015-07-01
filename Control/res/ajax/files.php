@@ -21,14 +21,27 @@ function mime($path) {
     // default to unknown type if empty
     return $mime ? $mime : (is_dir($path) ? "directory" : "unknown");
 }
+// generate or retrieve a key to access a file in the current session
+function genkey($path) {
+    if (!array_key_exists("files", $_SESSION)) $_SESSION["files"] = array();
+    // reuse existing key, otherwise pick a new one
+    if (!($key = array_search($path, $_SESSION["files"], true))) {
+        $key = substr(base64_encode(mt_rand()), 0, 15);
+        while (array_key_exists($key, $_SESSION["files"])) $key = substr(base64_encode(mt_rand()), 0, 15);
+        $_SESSION["files"][$key] = $path;
+    }
+    return $key;
+}
 // return file content by GET
-if (isset($_GET["key"])) {
+if (array_key_exists("key", $_GET)) {
     $key = $_GET["key"];
     // unrecognized or expired key
-    if (!array_key_exists($key, $_SESSION["files"])) return http_response_code(404);
+    if (!array_key_exists("files", $_SESSION) || !array_key_exists($key, $_SESSION["files"])) return http_response_code(404);
     // output raw file
     $file = $_SESSION["files"][$key];
     header("Content-Type: " . finfo_file($finfo, $file));
+    // force download if requested
+    if (array_key_exists("dl", $_GET)) header("Content-Disposition: attachment; filename=\"" . basename($file) . "\"");
     print(file_get_contents($file));
     return;
 }
@@ -57,27 +70,26 @@ if (isset($_POST["newfolder"])) {
 } elseif (isset($_POST["file"])) {
     $file = realpath($dir . "/" . $_POST["file"]);
     // specified file doesn't exist
-    if (!file_exists($file)) return http_response_code(409);
+    if (!file_exists($file)) return http_response_code(404);
     // can't be accessed by server user
     if (!is_readable($file)) return http_response_code(401);
-    // default empty MIME to plain text
-    header("Content-Type: text/plain");
+    // always present a key if forced
+    if (isset($_POST["dl"])) {
+        print(genkey($file));
+        return;
+    }
     // split MIME by / and take first half
     switch (current(explode("/", mime($file)))) {
         // output plain text
         case "text":
+            header("Content-Type: text/plain");
             print(file_get_contents($file));
             break;
         // output key to access file by GET request
         case "image":
         case "audio":
         case "video":
-            if (!array_key_exists("files", $_SESSION)) $_SESSION["files"] = array();
-            // pick new key
-            $key = substr(base64_encode(mt_rand()), 0, 15);
-            while (array_key_exists($key, $_SESSION["files"])) $key = substr(base64_encode(mt_rand()), 0, 15);
-            $_SESSION["files"][$key] = $file;
-            print($key);
+            print(genkey($file));
             break;
         // file cannot be previewed
         default:

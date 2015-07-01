@@ -350,6 +350,21 @@ if ($access) {
                             if (loading) return;
                             $("#files-display-title").text(file[0]);
                             $("#files-display-content").empty().append(progressBar());
+                            $("#files-display-download").off("click").click(function(e) {
+                                ajaxWrap("Files: download " + file[0], {
+                                    url: "res/ajax/files.php",
+                                    method: "post",
+                                    data: {
+                                        "dir": path,
+                                        "file": file[0],
+                                        "dl": true
+                                    },
+                                    dataType: "text",
+                                    success: function(data, stat, xhr) {
+                                        window.location = "res/ajax/files.php?key=" + data + "&dl=1";
+                                    }
+                                });
+                            });
                             $("#files-display").modal("show");
                             ajaxWrap("Files: preview " + file[0], {
                                 url: "res/ajax/files.php",
@@ -393,7 +408,7 @@ if ($access) {
                                             content = "File not accessible to user <code><?=$user;?></code>.";
                                             break;
                                         // file doesn't exist
-                                        case 409:
+                                        case 404:
                                             colour = "warning";
                                             content = "File no longer exists.";
                                             break;
