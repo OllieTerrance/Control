@@ -12,8 +12,8 @@ $title = (array_key_exists("title", $config) ? $config["title"] : "Control");
         <link rel="icon" sizes="16x16" href="res/img/icon-16.png">
         <link rel="icon" sizes="196x196" href="res/img/icon-196.png">
         <link rel="icon" sizes="128x128" href="res/img/icon-128.png">
-        <link href="lib/css/bootstrap.min.css" rel="stylesheet">
-        <link href="lib/css/font-awesome.min.css" rel="stylesheet">
+        <link href="/.cdn/css/bootstrap.min.css" rel="stylesheet">
+        <link href="/.cdn/css/font-awesome.min.css" rel="stylesheet">
         <link href="res/css/control.css.php" rel="stylesheet">
     </head>
     <body>
@@ -339,8 +339,8 @@ if ($access) {
     }
 }
 ?>
-        <script src="lib/js/jquery.min.js"></script>
-        <script src="lib/js/bootstrap.min.js"></script>
+        <script src="/.cdn/js/jquery.min.js"></script>
+        <script src="/.cdn/js/bootstrap.min.js"></script>
         <script src="res/js/control.js.php"></script>
     </body>
 </html>
