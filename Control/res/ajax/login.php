@@ -3,7 +3,6 @@
 require_once "../php/common.php";
 // no remote login allowed
 if (!array_key_exists("password", $config)) return http_response_code(400);
-session_start();
 // clear session and logout
 if (array_key_exists("logout", $_GET)) {
     session_destroy();

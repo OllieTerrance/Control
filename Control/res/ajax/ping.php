@@ -1,5 +1,4 @@
 <?
-error_reporting(E_ALL);
 // ping a device on the network
 require_once "../php/auth.php";
 $device = $_POST["device"];
