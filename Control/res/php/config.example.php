@@ -38,6 +38,6 @@ $config = array(
     ),
     // services: service platform to query - supports "debian" (service) or "arch" (systemctl)
     "services" => "debian",
-    // messages: path of server-writable file to store received messages
+    // messages: path of server-writable file to store received messages, or true to mail() to current user
     "messages" => "/var/data/control_messages.txt"
 );
